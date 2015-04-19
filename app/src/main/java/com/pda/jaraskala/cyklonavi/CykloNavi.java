@@ -1,9 +1,13 @@
 package com.pda.jaraskala.cyklonavi;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 
 
 public class CykloNavi extends ActionBarActivity {
@@ -12,6 +16,12 @@ public class CykloNavi extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cyklo_navi);
+        final Button button = (Button) findViewById(R.id.button_show_map);
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                startNavigation();
+            }
+        });
     }
 
 
@@ -36,4 +46,17 @@ public class CykloNavi extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
+public void startNavigation(){
+    Intent intent;
+    intent = new Intent(this, NavigationActivity.class);
+    startActivity(intent);
+}
+//    public void buttonClicked(View v){
+//        Button button = (Button) findViewById(R.id.button_show_map);
+//        button.setOnClickListener(new View.OnClickListener() {
+//            public void onClick(View v) {
+//                // Do something in response to button click
+//            }
+//        });
+//    }
 }
