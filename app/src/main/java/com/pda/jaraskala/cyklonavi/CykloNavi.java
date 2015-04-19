@@ -22,6 +22,12 @@ public class CykloNavi extends ActionBarActivity {
                 startNavigation();
             }
         });
+        final Button button2 = (Button) findViewById(R.id.button_load_saves);
+        button2.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                startLoadScreen();
+            }
+        });
     }
 
 
@@ -51,6 +57,12 @@ public void startNavigation(){
     intent = new Intent(this, NavigationActivity.class);
     startActivity(intent);
 }
+
+    public void startLoadScreen(){
+        Intent intent;
+        intent = new Intent(this, loadScreen.class);
+        startActivity(intent);
+    }
 //    public void buttonClicked(View v){
 //        Button button = (Button) findViewById(R.id.button_show_map);
 //        button.setOnClickListener(new View.OnClickListener() {

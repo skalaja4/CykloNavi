@@ -8,4 +8,13 @@
     <string name="show_map_button">Show Map</string>
     <string name="kolo">kolo</string>
     <string name="title_activity_navigation">Map</string>
+    <string name="title_activity_load_screen">loadScreen</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_menu">menu</string>
+    <string name="Saves">Saves</string>
+    <string name="Track_info">Track info</string>
+    <string name="Settings">Settings</string>
+    <string name="Help">Help</string>
+    <string name="Change_destination">Change destination/track</string>
 </resources>

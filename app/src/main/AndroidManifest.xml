@@ -39,6 +39,14 @@
             android:name=".NavigationActivity"
             android:label="@string/title_activity_navigation" >
         </activity>
+        <activity
+            android:name=".loadScreen"
+            android:label="@string/title_activity_load_screen" >
+        </activity>
+        <activity
+            android:name=".menu"
+            android:label="@string/title_activity_menu" >
+        </activity>
     </application>
 
 </manifest>
