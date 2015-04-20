@@ -7,6 +7,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 
 public class menu extends ActionBarActivity {
@@ -19,7 +24,11 @@ public class menu extends ActionBarActivity {
         final Button button2 = (Button) findViewById(R.id.button2);
         button2.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-
+                button2.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View v) {
+                        startNavigationActivity();
+                    }
+                });
             }
         });
 
@@ -48,6 +57,9 @@ public class menu extends ActionBarActivity {
         final Button button6 = (Button) findViewById(R.id.button6);
         button6.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+
+                TextView tv = (TextView) findViewById(R.id.textViewHelp);
+                tv.setText(readFile());
                 startHelp();
             }
         });
@@ -96,6 +108,30 @@ public class menu extends ActionBarActivity {
         Intent intent;
         intent = new Intent(this, TrackInfo.class);
         startActivity(intent);
+    }
+    public void startNavigationActivity(){
+        Intent intent;
+        intent = new Intent(this, NavigationActivity.class);
+        startActivity(intent);
+    }
+    public String readFile(){
+        String FILENAME = "cykloNaviSettings";
+        String string = "";
+        byte[] bytes =new byte[255];
+        try {
+            FileInputStream fos = openFileInput(FILENAME);
+            fos.read(bytes);
+            String input = new String(bytes);
+            return input;
+
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "Nepovedlo se";
+
     }
 
 

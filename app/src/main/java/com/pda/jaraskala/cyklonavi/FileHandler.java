@@ -9,13 +9,16 @@ import java.io.FileOutputStream;
  * Created by jaraskala on 20.04.15.
  */
 public class FileHandler {
-    String FILENAME = "CykloNaviSettings";
+
     FileOutputStream out;
     FileInputStream  in;
 
-    public FileHandler() {
 
 
-        this.in = fileContext.getApplicationContext().openFileInput(FILENAME, Context.MODE_PRIVATE);
+    public FileHandler(FileOutputStream out, FileInputStream in) {
+        this.out = out;
+        this.in = in;
     }
+
+
 }

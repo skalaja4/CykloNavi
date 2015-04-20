@@ -1,10 +1,16 @@
 package com.pda.jaraskala.cyklonavi;
 
+import android.content.Context;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 
 public class Help extends ActionBarActivity {
@@ -15,9 +21,21 @@ public class Help extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_help);
         tv =(TextView) findViewById(R.id.textViewHelp);
-        if(!settings.enSettings()){
-            tv.setText(" češtinaaaaaaa!!!!!!!" +"\n"+
-                    "Je tam češtinaaaaaaa");
+
+        String FILENAME = "cykloNaviSettings";
+        String string = "";
+        byte[] bytes =new byte[255];
+        try {
+            FileInputStream fos = openFileInput(FILENAME);
+            fos.read(bytes);
+            String input = new String(bytes);
+
+            tv.setText(input);
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
     }

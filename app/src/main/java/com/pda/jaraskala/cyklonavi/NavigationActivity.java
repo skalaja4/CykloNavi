@@ -3,12 +3,15 @@ package com.pda.jaraskala.cyklonavi;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 
-public class NavigationActivity extends FragmentActivity {
+public class NavigationActivity extends FragmentActivity implements OnMapReadyCallback{
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
 
@@ -61,5 +64,20 @@ public class NavigationActivity extends FragmentActivity {
      */
     private void setUpMap() {
         mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
+    }
+
+
+    @Override
+    public void onMapReady(GoogleMap map) {
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                new LatLng(-18.142, 178.431), 2));
+
+        // Polylines are useful for marking paths and routes on the map.
+        map.addPolyline(new PolylineOptions().geodesic(true)
+                .add(new LatLng(-33.866, 151.195))  // Sydney
+                .add(new LatLng(-18.142, 178.431))  // Fiji
+                .add(new LatLng(21.291, -157.821))  // Hawaii
+                .add(new LatLng(37.423, -122.091))  // Mountain View
+        );
     }
 }
