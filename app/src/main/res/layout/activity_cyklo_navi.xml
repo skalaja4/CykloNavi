@@ -12,7 +12,7 @@
         android:textSize="30sp"
         android:textColor="#000"
         android:textStyle="bold|italic"
-        android:layout_below="@+id/imageView2"
+        android:layout_below="@+id/imageView2Main"
         android:layout_centerHorizontal="true" />
 
     <ImageView
@@ -28,7 +28,7 @@
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/imageView2"
+        android:id="@+id/imageView2Main"
         android:src="@mipmap/settings"
         android:contentDescription="@string/kolo"
         android:layout_alignRight="@+id/button_show_map"

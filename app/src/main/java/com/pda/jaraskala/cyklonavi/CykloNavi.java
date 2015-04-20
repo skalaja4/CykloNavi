@@ -8,9 +8,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 
 
 public class CykloNavi extends ActionBarActivity {
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +30,13 @@ public class CykloNavi extends ActionBarActivity {
                 startLoadScreen();
             }
         });
+        final ImageView imageView = (ImageView) findViewById(R.id.imageView2Main);
+        imageView.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                startMenu();
+            }
+        });
+
     }
 
 
@@ -63,6 +72,13 @@ public void startNavigation(){
         intent = new Intent(this, loadScreen.class);
         startActivity(intent);
     }
+    public void startMenu(){
+        Intent intent;
+        intent = new Intent(this, menu.class);
+        startActivity(intent);
+    }
+
+
 //    public void buttonClicked(View v){
 //        Button button = (Button) findViewById(R.id.button_show_map);
 //        button.setOnClickListener(new View.OnClickListener() {

@@ -29,6 +29,7 @@
         android:id="@+id/button3"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
         android:layout_below="@+id/button2"
         android:layout_alignParentRight="true" />
 
@@ -39,6 +40,7 @@
         android:id="@+id/button4"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
         android:layout_below="@+id/button3"
         android:layout_alignParentRight="true" />
 
@@ -49,6 +51,7 @@
         android:id="@+id/button5"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/button4"
+        android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true" />
 
     <Button
@@ -58,6 +61,7 @@
         android:id="@+id/button6"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/button5"
+        android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true" />
 
 </RelativeLayout>

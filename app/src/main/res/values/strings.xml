@@ -17,4 +17,7 @@
     <string name="Settings">Settings</string>
     <string name="Help">Help</string>
     <string name="Change_destination">Change destination/track</string>
+    <string name="title_activity_settings">settings</string>
+    <string name="title_activity_help">Help</string>
+    <string name="title_activity_track_info">TrackInfo</string>
 </resources>

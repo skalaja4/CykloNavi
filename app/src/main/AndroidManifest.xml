@@ -47,6 +47,18 @@
             android:name=".menu"
             android:label="@string/title_activity_menu" >
         </activity>
+        <activity
+            android:name=".settings"
+            android:label="@string/title_activity_settings" >
+        </activity>
+        <activity
+            android:name=".Help"
+            android:label="@string/title_activity_help" >
+        </activity>
+        <activity
+            android:name=".TrackInfo"
+            android:label="@string/title_activity_track_info" >
+        </activity>
     </application>
 
 </manifest>
