@@ -58,8 +58,7 @@ public class menu extends ActionBarActivity {
         button6.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
-                TextView tv = (TextView) findViewById(R.id.textViewHelp);
-                tv.setText(readFile());
+
                 startHelp();
             }
         });
@@ -103,6 +102,7 @@ public class menu extends ActionBarActivity {
         Intent intent;
         intent = new Intent(this, Help.class);
         startActivity(intent);
+
     }
     public void startTrackInfo(){
         Intent intent;

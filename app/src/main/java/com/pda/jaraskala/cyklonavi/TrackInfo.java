@@ -4,6 +4,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 
 public class TrackInfo extends ActionBarActivity {
@@ -12,8 +13,32 @@ public class TrackInfo extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_track_info);
+
+
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        TextView tv=  (TextView)findViewById(R.id.trackInfo);
+        tv.setText(String.valueOf(System.currentTimeMillis()));
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+    }
+
+    @Override
+    protected void onStop() {
+
+
+        super.onStop();
+
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

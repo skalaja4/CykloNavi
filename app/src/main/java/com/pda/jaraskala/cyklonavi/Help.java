@@ -20,6 +20,12 @@ public class Help extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_help);
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
         tv =(TextView) findViewById(R.id.textViewHelp);
 
         String FILENAME = "cykloNaviSettings";
@@ -37,9 +43,7 @@ public class Help extends ActionBarActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

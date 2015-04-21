@@ -10,8 +10,8 @@ import java.io.FileOutputStream;
  */
 public class FileHandler {
 
-    FileOutputStream out;
-    FileInputStream  in;
+static FileOutputStream out;
+static FileInputStream  in;
 
 
 
