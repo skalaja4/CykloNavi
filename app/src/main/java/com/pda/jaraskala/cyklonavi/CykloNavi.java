@@ -1,6 +1,8 @@
 package com.pda.jaraskala.cyklonavi;
 
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -38,6 +40,7 @@ public class CykloNavi extends ActionBarActivity {
         });
 
 
+
     }
 
 
@@ -57,6 +60,7 @@ public class CykloNavi extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            startMenu();
             return true;
         }
 

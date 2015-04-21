@@ -1,6 +1,7 @@
 package com.pda.jaraskala.cyklonavi;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -26,23 +27,6 @@ public class Help extends ActionBarActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        tv =(TextView) findViewById(R.id.textViewHelp);
-
-        String FILENAME = "cykloNaviSettings";
-        String string = "";
-        byte[] bytes =new byte[255];
-        try {
-            FileInputStream fos = openFileInput(FILENAME);
-            fos.read(bytes);
-            String input = new String(bytes);
-
-            tv.setText(input);
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
@@ -61,6 +45,15 @@ public class Help extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Intent intent;
+            intent = new Intent(this, menu.class);
+            startActivity(intent);
+            return true;
+        }
+        if(id == R.id.action_back){
+            Intent intent;
+            intent = new Intent(this, menu.class);
+            startActivity(intent);
             return true;
         }
 
