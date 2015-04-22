@@ -38,7 +38,7 @@ public class CykloNavi extends ActionBarActivity {
                 startMenu();
             }
         });
-        startNavigation();
+
 
 
 

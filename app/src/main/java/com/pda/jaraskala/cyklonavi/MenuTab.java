@@ -1,7 +1,11 @@
 package com.pda.jaraskala.cyklonavi;
 
+import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
+
+import android.support.v4.app.NavUtils;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -29,6 +33,10 @@ public class MenuTab extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu_tab);
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+         actionBar.setIcon(R.drawable.kolo);
 
         TabHost tabHost =(TabHost) findViewById(R.id.tabHost);
 
@@ -110,6 +118,14 @@ public class MenuTab extends ActionBarActivity {
         readFile();
 
     }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        itIsLast();
+
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -125,11 +141,13 @@ public class MenuTab extends ActionBarActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if(id == R.id.action_back){
-            Intent intent;
-            intent = new Intent(this, CykloNavi.class);
-            startActivity(intent);
+
+        if(id == android.R.id.home){
+           // openLastOne();
+            NavUtils.navigateUpFromSameTask(this);
             return true;
+
+
         }
 
         return super.onOptionsItemSelected(item);
@@ -209,5 +227,84 @@ public class MenuTab extends ActionBarActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void itIsLast(){
+        String FILENAME = "cykloNaviSettings";
+
+        byte[] bytes =new byte[255];
+        try {
+            FileInputStream fis = openFileInput(FILENAME);
+            fis.read(bytes);
+            String input = new String(bytes);
+            String output="";
+            for(int i=1; i<input.length();i++){
+                output+=input.charAt(i);
+                if(input.charAt(i-1)=='3'){
+                    output+="4menu";
+                    break;
+                }
+
+
+            }
+
+            FileOutputStream fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
+            fos.write(output.getBytes());
+            fos.close();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void openLastOne()  {
+        String FILENAME = "cykloNaviSettings";
+
+        byte[] bytes =new byte[255];
+        FileInputStream fis = null;
+        try {
+            fis = openFileInput(FILENAME);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        try {
+            fis.read(bytes);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String input = new String(bytes);
+
+        for(int i=0; i<input.length();i++){
+
+            if(input.charAt(i)=='4'){
+
+                if(input.charAt(i+1)=='m'){
+                    Intent intent;
+                    intent = new Intent(this, MenuTab.class);
+                    startActivity(intent);
+                    break;
+                }
+
+                if(input.charAt(i+1)=='g'){
+                    Intent intent;
+                    intent = new Intent(this, NavigationActivity.class);
+                    startActivity(intent);
+                    break;
+                }
+
+                if(input.charAt(i+1)=='n'){
+
+                    break;
+                }
+
+
+
+            }
+
+
+        }
+
     }
 }

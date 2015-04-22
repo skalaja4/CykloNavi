@@ -1,5 +1,6 @@
 package com.pda.jaraskala.cyklonavi;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -15,6 +16,11 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 public class NavigationActivity extends ActionBarActivity implements OnMapReadyCallback{
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
@@ -24,6 +30,7 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation);
         setUpMapIfNeeded();
+
     }
 
     @Override
@@ -86,6 +93,13 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        itIsLast();
+
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -99,12 +113,10 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
             startActivity(intent);
             return true;
         }
-        if(id == R.id.action_back){
-            Intent intent;
-            intent = new Intent(this, CykloNavi.class);
-            startActivity(intent);
-            return true;
-        }
+
+
+
+
 
 
         return super.onOptionsItemSelected(item);
@@ -115,5 +127,83 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_navigation, menu);
         return true;
+    }
+    public void itIsLast(){
+        String FILENAME = "cykloNaviSettings";
+
+        byte[] bytes =new byte[255];
+        try {
+            FileInputStream fis = openFileInput(FILENAME);
+            fis.read(bytes);
+            String input = new String(bytes);
+            String output="";
+            for(int i=1; i<input.length();i++){
+                output+=input.charAt(i);
+
+                if(input.charAt(i-1)=='3'){
+                    output+="4google";
+                    break;
+                }
+
+
+            }
+
+            FileOutputStream fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
+            fos.write(output.getBytes());
+            fos.close();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public void openLastOne()  {
+        String FILENAME = "cykloNaviSettings";
+
+        byte[] bytes =new byte[255];
+        FileInputStream fis = null;
+        try {
+            fis = openFileInput(FILENAME);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        try {
+            fis.read(bytes);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String input = new String(bytes);
+
+        for(int i=0; i<input.length();i++){
+
+            if(input.charAt(i)=='4'){
+
+                if(input.charAt(i+1)=='m'){
+                    Intent intent;
+                    intent = new Intent(this, MenuTab.class);
+                    startActivity(intent);
+                    break;
+                }
+
+                if(input.charAt(i+1)=='g'){
+                    Intent intent;
+                    intent = new Intent(this, NavigationActivity.class);
+                    startActivity(intent);
+                    break;
+                }
+
+                if(input.charAt(i+1)=='n'){
+
+                    break;
+                }
+
+
+
+            }
+
+
+        }
+
     }
 }
