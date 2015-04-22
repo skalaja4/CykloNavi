@@ -66,8 +66,8 @@
             android:label="@string/title_activity_track_info" >
         </activity>
         <activity
-            android:name=".MenuFragment"
-            android:label="@string/title_activity_menu_fragment" >
+            android:name=".MenuTab"
+            android:label="@string/title_activity_menu_tab" >
         </activity>
     </application>
 

@@ -38,6 +38,7 @@ public class CykloNavi extends ActionBarActivity {
                 startMenu();
             }
         });
+        startNavigation();
 
 
 
@@ -66,11 +67,11 @@ public class CykloNavi extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
-public void startNavigation(){
-    Intent intent;
-    intent = new Intent(this, NavigationActivity.class);
-    startActivity(intent);
-}
+    public void startNavigation(){
+        Intent intent;
+        intent = new Intent(this, NavigationActivity.class);
+        startActivity(intent);
+    }
 
     public void startLoadScreen(){
         Intent intent;
@@ -79,7 +80,7 @@ public void startNavigation(){
     }
     public void startMenu(){
         Intent intent;
-        intent = new Intent(this, menu.class);
+        intent = new Intent(this, MenuTab.class);
         startActivity(intent);
     }
 

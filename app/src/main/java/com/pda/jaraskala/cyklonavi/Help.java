@@ -46,7 +46,7 @@ public class Help extends ActionBarActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             Intent intent;
-            intent = new Intent(this, MenuFragment.class);
+            intent = new Intent(this, MenuTab.class);
             startActivity(intent);
             return true;
         }

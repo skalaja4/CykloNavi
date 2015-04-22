@@ -22,4 +22,11 @@
     <string name="title_activity_track_info">TrackInfo</string>
     <string name="action_back">actionBack</string>
     <string name="title_activity_menu_fragment">MenuFragment</string>
+    <string name="title_activity_tabbed_menu">TabbedMenu</string>
+    <string name="title_section1">titleSection1</string>
+    <string name="title_section2">titleSection2</string>
+    <string name="title_section3">titleSection3</string>
+    <string name="title_activity_menu_tab">MenuTab</string>
+
+
 </resources>

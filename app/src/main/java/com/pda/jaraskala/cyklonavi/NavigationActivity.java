@@ -95,7 +95,7 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             Intent intent;
-            intent = new Intent(this, menu.class);
+            intent = new Intent(this, MenuTab.class);
             startActivity(intent);
             return true;
         }

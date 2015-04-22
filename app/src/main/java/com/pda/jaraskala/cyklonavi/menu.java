@@ -82,12 +82,7 @@ public class menu extends ActionBarActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            Intent intent;
-            intent = new Intent(this, menu.class);
-            startActivity(intent);
-            return true;
-        }
+
         if(id == R.id.action_back){
             Intent intent;
             intent = new Intent(this, CykloNavi.class);
