@@ -2,8 +2,13 @@ package com.pda.jaraskala.cyklonavi;
 
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.net.Uri;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -12,7 +17,11 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
@@ -24,13 +33,49 @@ import java.io.IOException;
 public class NavigationActivity extends ActionBarActivity implements OnMapReadyCallback{
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
-
+    private boolean navigationEnabled=false;
+    private Marker mark=null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation);
         setUpMapIfNeeded();
+        mMap.setMyLocationEnabled(true);
 
+        LocationManager manager=(LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        BitmapDescriptor icon=BitmapDescriptorFactory.fromResource(R.mipmap.pointer2);
+        mark=mMap.addMarker(new MarkerOptions().position(new LatLng(0,0)).title("pozice").icon(icon));
+        LocationListener listener=new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+
+                LatLng position=new LatLng(location.getLatitude(),location.getLongitude());
+                if(navigationEnabled) {
+                    mMap.animateCamera(CameraUpdateFactory.newLatLng(position));
+
+                }
+                mark.setPosition(position);
+                //mark=mMap.addMarker(new MarkerOptions().position(position).title("pozice").icon(icon));
+
+
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+
+            }
+        };
+        manager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,listener);
     }
 
     @Override
@@ -74,22 +119,32 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
      * This should only be called once and when we are sure that {@link #mMap} is not null.
      */
     private void setUpMap() {
-        mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
-    }
-
-
-    @Override
-    public void onMapReady(GoogleMap map) {
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(
+        BitmapDescriptor icon=BitmapDescriptorFactory.fromResource(R.drawable.kolo);
+        mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("kolo").icon(icon));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                 new LatLng(-18.142, 178.431), 2));
 
-        // Polylines are useful for marking paths and routes on the map.
-        map.addPolyline(new PolylineOptions().geodesic(true)
+        mMap.addPolyline(new PolylineOptions().geodesic(true)
                 .add(new LatLng(-33.866, 151.195))  // Sydney
                 .add(new LatLng(-18.142, 178.431))  // Fiji
                 .add(new LatLng(21.291, -157.821))  // Hawaii
                 .add(new LatLng(37.423, -122.091))  // Mountain View
         );
+    }
+
+
+    @Override
+    public void onMapReady(GoogleMap map) {
+//        map.moveCamera(CameraUpdateFactory.newLatLngZoom(
+//                new LatLng(-18.142, 178.431), 2));
+//
+//        // Polylines are useful for marking paths and routes on the map.
+//        map.addPolyline(new PolylineOptions().geodesic(true)
+//                .add(new LatLng(-33.866, 151.195))  // Sydney
+//                .add(new LatLng(-18.142, 178.431))  // Fiji
+//                .add(new LatLng(21.291, -157.821))  // Hawaii
+//                .add(new LatLng(37.423, -122.091))  // Mountain View
+//        );
     }
 
     @Override
@@ -111,6 +166,16 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
             Intent intent;
             intent = new Intent(this, MenuTab.class);
             startActivity(intent);
+         // navigationEnabled=!navigationEnabled;
+
+            //test query na google maps
+            Uri gmmIntentUri = Uri.parse("geo:0,0?q=Evropska+Praha+6");
+//            Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+//            mapIntent.setPackage("com.google.android.apps.maps");
+//            startActivity(mapIntent);
+
+
+
             return true;
         }
 
