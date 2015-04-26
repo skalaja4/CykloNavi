@@ -139,14 +139,33 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
         BitmapDescriptor icon=BitmapDescriptorFactory.fromResource(R.drawable.kolo);
         mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("kolo").icon(icon));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                new LatLng(-18.142, 178.431), 2));
+                new LatLng(50.083872, 14.437499), 15));
 
         mMap.addPolyline(new PolylineOptions().geodesic(true)
-                .add(new LatLng(-33.866, 151.195))  // Sydney
-                .add(new LatLng(-18.142, 178.431))  // Fiji
-                .add(new LatLng(21.291, -157.821))  // Hawaii
-                .add(new LatLng(37.423, -122.091))  // Mountain View
+                .add(new LatLng(50.074, 14.448))
+                .add(new LatLng(50.077, 14.448))
+                .add(new LatLng(50.078, 14.448))
+                .add(new LatLng(50.080, 14.447))
+                .add(new LatLng(50.081, 14.445))
+                .add(new LatLng(50.081, 14.444))
+                .add(new LatLng(50.083, 14.443))
+                .add(new LatLng(50.084399, 14.441216))
+                .add(new LatLng(50.085036, 14.441114))
+                .add(new LatLng(50.085136, 14.440709))
+                .add(new LatLng(50.086174, 14.437802))
+                .add(new LatLng(50.086489, 14.436973))
+                .add(new LatLng(50.087264, 14.435220))
+                .add(new LatLng(50.087269, 14.432607))
+                .add(new LatLng(50.089678, 14.432412))
+                .add(new LatLng(50.091074, 14.431888))
+                .add(new LatLng(50.091528, 14.431781))
+                .add(new LatLng(50.090704, 14.427769))
+                .add(new LatLng(50.090677, 14.426057))
+                .add(new LatLng(50.089510, 14.422672))
+                .add(new LatLng(50.089290, 14.422796))
+                .add(new LatLng(50.089331, 14.42379))
         );
+
     }
 
 
