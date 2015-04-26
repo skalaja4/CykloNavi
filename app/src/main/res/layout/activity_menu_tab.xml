@@ -29,6 +29,82 @@
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent">
 
+
+
+                <LinearLayout
+                    android:id="@+id/tab_trackInfo"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:orientation="vertical">
+
+                    <TextView android:text="TRACK INFO"
+                        android:textSize="20dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/trackInfo"/>
+
+                    <TextView
+                        android:textSize="20dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/trackInfo2"
+                        android:layout_below="@+id/trackInfo"
+                        android:text="Length:           3.6 km"/>
+                    <TextView
+                        android:textSize="20dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/trackInfo3"
+                        android:layout_below="@+id/trackInfo2"
+                        android:text="Time:              20 min"/>
+                    <TextView
+                        android:textSize="20dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/trackInfo4"
+                        android:layout_below="@+id/trackInfo3"
+                        android:text="Total ascent: 28 m"/>
+                    <TextView
+                        android:textSize="15dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/trackInfo5"
+                        android:layout_below="@+id/trackInfo4"
+                        android:text="Elevation profile:"/>
+                    <ImageView
+                        android:layout_below="@+id/trackInfo5"
+                        android:id="@+id/trackInfoElevation"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:src="@mipmap/elevation"/>
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/tab_saves"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:orientation="vertical">
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Save current track"
+                        android:id="@+id/button"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="62dp" />
+
+                    <ListView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/saves_listView"
+                        android:layout_below="@+id/button"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true"
+                        android:choiceMode="singleChoice" />
+
+                    </LinearLayout>
                 <LinearLayout
                     android:id="@+id/tab_settings"
                     android:layout_width="fill_parent"
@@ -95,82 +171,7 @@
                         android:layout_height="wrap_content"
                         android:id="@+id/pokus"/>
 
-                    </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/tab_trackInfo"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:orientation="vertical">
-
-                    <TextView android:text="TRACK INFO"
-                        android:textSize="20dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/trackInfo"/>
-
-                    <TextView
-                        android:textSize="20dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/trackInfo2"
-                        android:layout_below="@+id/trackInfo"
-                        android:text="Length:           3.6 km"/>
-                    <TextView
-                        android:textSize="20dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/trackInfo3"
-                        android:layout_below="@+id/trackInfo2"
-                        android:text="Time:              20 min"/>
-                    <TextView
-                        android:textSize="20dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/trackInfo4"
-                        android:layout_below="@+id/trackInfo3"
-                        android:text="Total ascent: 28 m"/>
-                    <TextView
-                        android:textSize="15dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/trackInfo5"
-                        android:layout_below="@+id/trackInfo4"
-                        android:text="Elevation profile:"/>
-                    <ImageView
-                        android:layout_below="@+id/trackInfo5"
-                        android:id="@+id/trackInfoElevation"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@mipmap/elevation"/>
-
-
                 </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/tab_saves"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:orientation="vertical">
-
-                    <Button
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Save current track"
-                        android:id="@+id/button"
-                        android:layout_centerHorizontal="true"
-                        android:layout_marginTop="62dp" />
-
-                    <ListView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/saves_listView"
-                        android:layout_below="@+id/button"
-                        android:layout_alignParentRight="true"
-                        android:layout_alignParentEnd="true"
-                        android:choiceMode="singleChoice" />
-
-                    </LinearLayout>
                 <LinearLayout
                     android:id="@+id/tab_help"
                     android:layout_width="fill_parent"
