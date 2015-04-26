@@ -1,6 +1,5 @@
 package com.pda.jaraskala.cyklonavi;
 
-import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 
@@ -8,11 +7,18 @@ import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.RadioButton;
+import android.widget.Spinner;
 import android.widget.TabHost;
+import android.widget.TextView;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -20,14 +26,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 
-public class MenuTab extends ActionBarActivity {
-    private RadioButton rb;
-    private RadioButton rb2;
-    private RadioButton rb3;
-    private RadioButton rb4;
-    private RadioButton rb5;
-    private RadioButton rb6;
-    private RadioButton rb7;
+public class MenuTab extends ActionBarActivity implements AdapterView.OnItemSelectedListener {
+
+    String[] strings1 ={"English","Čeština"};
+    String[] strings2 ={"km","mile"};
+    String[] strings3 ={"Pointer 1","Pointer 2", "Pointer 3"};
+    int arr_images[] ={R.mipmap.pointer1,R.mipmap.pointer2,R.mipmap.pointer3};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,53 +66,21 @@ public class MenuTab extends ActionBarActivity {
         tabSpec.setIndicator("Help");
         tabHost.addTab(tabSpec);
 
-        rb = (RadioButton) findViewById(R.id.radioButton);
-        rb.toggle();
-        rb2 = (RadioButton) findViewById(R.id.radioButton2);
-        rb3 = (RadioButton) findViewById(R.id.radioButton3);
-        rb3.toggle();
-        rb4 = (RadioButton) findViewById(R.id.radioButton4);
-        rb5 = (RadioButton) findViewById(R.id.radioButton5);
-        rb5.toggle();
-        rb6 = (RadioButton) findViewById(R.id.radioButton6);
-        rb7 = (RadioButton) findViewById(R.id.radioButton7);
 
-        rb.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v) {
-                reWriteSettings();
-            }
-        });
-        rb2.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v) {
-                reWriteSettings();
-            }
-        });
 
-        rb3.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v) {
-                reWriteSettings();
-            }
-        });
-        rb4.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v) {
-                reWriteSettings();
-            }
-        });
-        rb5.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v) {
-                reWriteSettings();
-            }
-        });
-        rb6.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v) {
-                reWriteSettings();
-            }
-        });
-        rb7.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v) {
-                reWriteSettings();
-            }
-        });
+        Spinner mySpinner1 = (Spinner)findViewById(R.id.spinner);
+        mySpinner1.setAdapter(new MyAdapter1(MenuTab.this, R.layout.row2, strings1));
+        mySpinner1.setOnItemSelectedListener(this);
+
+        Spinner mySpinner2 = (Spinner)findViewById(R.id.spinner2);
+        mySpinner2.setAdapter(new MyAdapter2(MenuTab.this, R.layout.row2, strings2));
+        mySpinner2.setOnItemSelectedListener(this);
+
+        Spinner mySpinner3 = (Spinner)findViewById(R.id.spinner3);
+        mySpinner3.setAdapter(new MyAdapter3(MenuTab.this, R.layout.row3, strings3));
+        mySpinner3.setOnItemSelectedListener(this);
+
+
     }
 
 
@@ -119,12 +91,7 @@ public class MenuTab extends ActionBarActivity {
 
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        itIsLast();
 
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -143,7 +110,7 @@ public class MenuTab extends ActionBarActivity {
         //noinspection SimplifiableIfStatement
 
         if(id == android.R.id.home){
-           // openLastOne();
+
             NavUtils.navigateUpFromSameTask(this);
             return true;
 
@@ -154,28 +121,93 @@ public class MenuTab extends ActionBarActivity {
     }
 
 
-    public void reWriteSettings(){
+    public String reWriteSettings(String object){
 
         String FILENAME = "cykloNaviSettings";
         String string = "";
+        byte[] bytes =new byte[255];
         try {
             FileOutputStream fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
-            string += "1"+rb.isChecked()+"2"+rb3.isChecked()+"3";
-            if(rb5.isChecked()){
-                string+="a";
+            FileInputStream fis = openFileInput(FILENAME);
+            fis.read(bytes);
+            String input = new String(bytes);
+
+            if(object.toString()=="English"){
+                for(int i=0; i<input.length();i++){
+                    string+=input.charAt(i);
+                    if(input.charAt(i)=='1'){
+                    string+="a";
+                        i++;
+                    }
+                }
             }
-            if(rb6.isChecked()){
-                string+="b";
-            }if(rb7.isChecked()){
-                string+="c";
+            if(object.toString()=="Čeština"){
+                for(int i=0; i<input.length();i++){
+                    string+=input.charAt(i);
+                    if(input.charAt(i)=='1'){
+                        string+="b";
+                        i++;
+                    }
+                }
+            }
+            if(object.toString()=="km"){
+                for(int i=0; i<input.length();i++){
+                    string+=input.charAt(i);
+                    if(input.charAt(i)=='2'){
+                        string+="a";
+                        i++;
+                    }
+                }
+            }
+            if(object.toString()=="mile"){
+                for(int i=0; i<input.length();i++){
+                    string+=input.charAt(i);
+                    if(input.charAt(i)=='2'){
+                        string+="b";
+                        i++;
+                    }
+                }
+            }
+            if(object.toString()=="Pointer 1"){
+                for(int i=0; i<input.length();i++){
+                    string+=input.charAt(i);
+                    if(input.charAt(i)=='3'){
+                        string+="a";
+                        i++;
+                    }
+                }
+            }
+            if(object.toString()=="Pointer 2"){
+                for(int i=0; i<input.length();i++){
+                    string+=input.charAt(i);
+                    if(input.charAt(i)=='3'){
+                        string+="b";
+                        i++;
+                    }
+                }
+            }
+            if(object.toString()=="Pointer 3"){
+                for(int i=0; i<input.length();i++){
+                    string+=input.charAt(i);
+                    if(input.charAt(i)=='3'){
+                        string+="c";
+                        i++;
+                    }
+                }
             }
             fos.write(string.getBytes());
             fos.close();
+            System.out.println(string);
+            if(string==""){
+                return "Taky nic";
+            }
+            return string;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return "NIC";
     }
 
     public void readFile(){
@@ -190,32 +222,7 @@ public class MenuTab extends ActionBarActivity {
             String input = new String(bytes);
             for(int i=0; i<input.length();i++){
                 if(input.charAt(i)=='1'){
-                    if(input.charAt(i+1)=='t'){
-                        rb.toggle();
-                    }else{
-                        rb2.toggle();
-                    }
-                    continue;
-                }
-                if(input.charAt(i)=='2'){
-                    if(input.charAt(i+1)=='t'){
-                        rb3.toggle();
-                    }else{
-                        rb4.toggle();
-                    }
-                    continue;
 
-                }
-
-                if(input.charAt(i)=='3'){
-                    if(input.charAt(i+1)=='a'){
-                        rb5.toggle();
-                    }else if(input.charAt(i+1)=='b'){
-                        rb6.toggle();
-                    }else{
-                        rb7.toggle();
-                    }
-                    break;
 
                 }
 
@@ -229,35 +236,7 @@ public class MenuTab extends ActionBarActivity {
         }
     }
 
-    public void itIsLast(){
-        String FILENAME = "cykloNaviSettings";
 
-        byte[] bytes =new byte[255];
-        try {
-            FileInputStream fis = openFileInput(FILENAME);
-            fis.read(bytes);
-            String input = new String(bytes);
-            String output="";
-            for(int i=1; i<input.length();i++){
-                output+=input.charAt(i);
-                if(input.charAt(i-1)=='3'){
-                    output+="4menu";
-                    break;
-                }
-
-
-            }
-
-            FileOutputStream fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
-            fos.write(output.getBytes());
-            fos.close();
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     public void openLastOne()  {
         String FILENAME = "cykloNaviSettings";
@@ -307,4 +286,105 @@ public class MenuTab extends ActionBarActivity {
         }
 
     }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+        //TextView tv = (TextView) findViewById(R.id.pokus);
+
+        //tv.setText(reWriteSettings(parent.getItemAtPosition(position).toString()));
+      //  tv.append(parent.getItemAtPosition(position).toString());
+
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
+    }
+    public class MyAdapter1 extends ArrayAdapter<String>{
+
+        public MyAdapter1(Context context, int textViewResourceId, String[] objects) {
+            super(context, textViewResourceId, objects);
+        }
+
+        @Override
+        public View getDropDownView(int position, View convertView,ViewGroup parent) {
+            return getCustomView(position, convertView, parent);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            return getCustomView(position, convertView, parent);
+        }
+
+        public View getCustomView(int position, View convertView, ViewGroup parent) {
+
+            LayoutInflater inflater=getLayoutInflater();
+            View row=inflater.inflate(R.layout.row2, parent, false);
+            TextView label=(TextView)row.findViewById(R.id.company2);
+            label.setText(strings1[position]);
+
+
+
+            return row;
+        }
+    }
+    public class MyAdapter2 extends ArrayAdapter<String>{
+
+        public MyAdapter2(Context context, int textViewResourceId, String[] objects) {
+            super(context, textViewResourceId, objects);
+        }
+
+        @Override
+        public View getDropDownView(int position, View convertView,ViewGroup parent) {
+            return getCustomView(position, convertView, parent);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            return getCustomView(position, convertView, parent);
+        }
+
+        public View getCustomView(int position, View convertView, ViewGroup parent) {
+
+            LayoutInflater inflater=getLayoutInflater();
+            View row=inflater.inflate(R.layout.row2, parent, false);
+            TextView label=(TextView)row.findViewById(R.id.company2);
+            label.setText(strings2[position]);
+
+
+
+            return row;
+        }
+    }
+    public class MyAdapter3 extends ArrayAdapter<String>{
+
+        public MyAdapter3(Context context, int textViewResourceId, String[] objects) {
+            super(context, textViewResourceId, objects);
+        }
+
+        @Override
+        public View getDropDownView(int position, View convertView,ViewGroup parent) {
+            return getCustomView(position, convertView, parent);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            return getCustomView(position, convertView, parent);
+        }
+
+        public View getCustomView(int position, View convertView, ViewGroup parent) {
+
+            LayoutInflater inflater=getLayoutInflater();
+            View row=inflater.inflate(R.layout.row3, parent, false);
+            TextView label=(TextView)row.findViewById(R.id.company);
+            label.setText(strings3[position]);
+
+            ImageView icon=(ImageView)row.findViewById(R.id.image);
+            icon.setImageResource(arr_images[position]);
+
+            return row;
+        }
+    }
+    
 }

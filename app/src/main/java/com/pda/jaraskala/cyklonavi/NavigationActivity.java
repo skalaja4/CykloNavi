@@ -39,6 +39,7 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation);
+
         setUpMapIfNeeded();
         mMap.setMyLocationEnabled(true);
 
@@ -193,6 +194,7 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
         getMenuInflater().inflate(R.menu.menu_navigation, menu);
         return true;
     }
+
     public void itIsLast(){
         String FILENAME = "cykloNaviSettings";
 
