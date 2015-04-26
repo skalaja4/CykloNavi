@@ -32,7 +32,9 @@ public class MenuTab extends ActionBarActivity implements AdapterView.OnItemSele
     String[] strings2 ={"km","mile"};
     String[] strings3 ={"Pointer 1","Pointer 2", "Pointer 3"};
     int arr_images[] ={R.mipmap.pointer1,R.mipmap.pointer2,R.mipmap.pointer3};
-
+    Spinner mySpinner1;
+    Spinner mySpinner2;
+    Spinner mySpinner3;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,17 +70,19 @@ public class MenuTab extends ActionBarActivity implements AdapterView.OnItemSele
 
 
 
-        Spinner mySpinner1 = (Spinner)findViewById(R.id.spinner);
+        mySpinner1 = (Spinner)findViewById(R.id.spinner);
         mySpinner1.setAdapter(new MyAdapter1(MenuTab.this, R.layout.row2, strings1));
         mySpinner1.setOnItemSelectedListener(this);
 
-        Spinner mySpinner2 = (Spinner)findViewById(R.id.spinner2);
+
+        mySpinner2 = (Spinner)findViewById(R.id.spinner2);
         mySpinner2.setAdapter(new MyAdapter2(MenuTab.this, R.layout.row2, strings2));
         mySpinner2.setOnItemSelectedListener(this);
 
-        Spinner mySpinner3 = (Spinner)findViewById(R.id.spinner3);
+        mySpinner3 = (Spinner)findViewById(R.id.spinner3);
         mySpinner3.setAdapter(new MyAdapter3(MenuTab.this, R.layout.row3, strings3));
         mySpinner3.setOnItemSelectedListener(this);
+
 
 
     }
@@ -123,6 +127,10 @@ public class MenuTab extends ActionBarActivity implements AdapterView.OnItemSele
 
     public String reWriteSettings(String object){
 
+        TextView tv = (TextView) findViewById(R.id.pokus);
+
+
+
         String FILENAME = "cykloNaviSettings";
         String string = "";
         byte[] bytes =new byte[255];
@@ -131,17 +139,19 @@ public class MenuTab extends ActionBarActivity implements AdapterView.OnItemSele
             FileInputStream fis = openFileInput(FILENAME);
             fis.read(bytes);
             String input = new String(bytes);
-
-            if(object.toString()=="English"){
+         //   tv.setText(input.charAt(1));
+            if(object.toString().equalsIgnoreCase("English")){
                 for(int i=0; i<input.length();i++){
                     string+=input.charAt(i);
                     if(input.charAt(i)=='1'){
                     string+="a";
-                        i++;
+
+
+
                     }
                 }
             }
-            if(object.toString()=="Čeština"){
+            if(object.toString().equalsIgnoreCase("Čeština")){
                 for(int i=0; i<input.length();i++){
                     string+=input.charAt(i);
                     if(input.charAt(i)=='1'){
@@ -150,7 +160,7 @@ public class MenuTab extends ActionBarActivity implements AdapterView.OnItemSele
                     }
                 }
             }
-            if(object.toString()=="km"){
+            if(object.toString().equalsIgnoreCase("km")){
                 for(int i=0; i<input.length();i++){
                     string+=input.charAt(i);
                     if(input.charAt(i)=='2'){
@@ -159,7 +169,7 @@ public class MenuTab extends ActionBarActivity implements AdapterView.OnItemSele
                     }
                 }
             }
-            if(object.toString()=="mile"){
+            if(object.toString().equalsIgnoreCase("mile")){
                 for(int i=0; i<input.length();i++){
                     string+=input.charAt(i);
                     if(input.charAt(i)=='2'){
@@ -168,33 +178,34 @@ public class MenuTab extends ActionBarActivity implements AdapterView.OnItemSele
                     }
                 }
             }
-            if(object.toString()=="Pointer 1"){
+            if(object.toString().equalsIgnoreCase("Pointer 1")){
                 for(int i=0; i<input.length();i++){
                     string+=input.charAt(i);
                     if(input.charAt(i)=='3'){
                         string+="a";
-                        i++;
+                        break;
                     }
                 }
             }
-            if(object.toString()=="Pointer 2"){
+            if(object.toString().equalsIgnoreCase("Pointer 2")){
                 for(int i=0; i<input.length();i++){
                     string+=input.charAt(i);
                     if(input.charAt(i)=='3'){
                         string+="b";
-                        i++;
+                        break;
                     }
                 }
             }
-            if(object.toString()=="Pointer 3"){
+            if(object.toString().equalsIgnoreCase("Pointer 3")){
                 for(int i=0; i<input.length();i++){
                     string+=input.charAt(i);
                     if(input.charAt(i)=='3'){
                         string+="c";
-                        i++;
+                        break;
                     }
                 }
             }
+
             fos.write(string.getBytes());
             fos.close();
             System.out.println(string);
@@ -220,9 +231,31 @@ public class MenuTab extends ActionBarActivity implements AdapterView.OnItemSele
             FileInputStream fos = openFileInput(FILENAME);
             fos.read(bytes);
             String input = new String(bytes);
+
+
             for(int i=0; i<input.length();i++){
                 if(input.charAt(i)=='1'){
+                    if(input.charAt(i+1)=='b'){
+                        mySpinner1.setSelection(1);
+                    }
 
+                }
+                if(input.charAt(i)=='2'){
+                    if(input.charAt(i+1)=='b'){
+                        mySpinner2.setSelection(1);
+                    }
+
+                }
+                if(input.charAt(i)=='3'){
+                    if(input.charAt(i+1)=='a'){
+                        mySpinner3.setSelection(0);
+                    }
+                    if(input.charAt(i+1)=='b'){
+                        mySpinner3.setSelection(1);
+                    }
+                    if(input.charAt(i+1)=='c'){
+                        mySpinner3.setSelection(2);
+                    }
 
                 }
 
@@ -238,63 +271,13 @@ public class MenuTab extends ActionBarActivity implements AdapterView.OnItemSele
 
 
 
-    public void openLastOne()  {
-        String FILENAME = "cykloNaviSettings";
 
-        byte[] bytes =new byte[255];
-        FileInputStream fis = null;
-        try {
-            fis = openFileInput(FILENAME);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        try {
-            fis.read(bytes);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        String input = new String(bytes);
-
-        for(int i=0; i<input.length();i++){
-
-            if(input.charAt(i)=='4'){
-
-                if(input.charAt(i+1)=='m'){
-                    Intent intent;
-                    intent = new Intent(this, MenuTab.class);
-                    startActivity(intent);
-                    break;
-                }
-
-                if(input.charAt(i+1)=='g'){
-                    Intent intent;
-                    intent = new Intent(this, NavigationActivity.class);
-                    startActivity(intent);
-                    break;
-                }
-
-                if(input.charAt(i+1)=='n'){
-
-                    break;
-                }
-
-
-
-            }
-
-
-        }
-
-    }
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-        //TextView tv = (TextView) findViewById(R.id.pokus);
 
-        //tv.setText(reWriteSettings(parent.getItemAtPosition(position).toString()));
-      //  tv.append(parent.getItemAtPosition(position).toString());
-
+        reWriteSettings(parent.getItemAtPosition(position).toString());
     }
 
     @Override

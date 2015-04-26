@@ -40,6 +40,22 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation);
 
+        String FILENAME = "cykloNaviSettings";
+        String string = "";
+        byte[] bytes =new byte[255];
+
+        try {
+            FileOutputStream fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
+            string="1a2b3c";
+            fos.write(string.getBytes());
+            fos.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
         setUpMapIfNeeded();
         mMap.setMyLocationEnabled(true);
 
