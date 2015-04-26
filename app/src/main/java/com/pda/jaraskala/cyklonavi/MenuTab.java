@@ -48,12 +48,9 @@ public class MenuTab extends ActionBarActivity implements AdapterView.OnItemSele
 
         tabHost.setup();
 
-        TabHost.TabSpec tabSpec = tabHost.newTabSpec("settings");
-        tabSpec.setContent(R.id.tab_settings);
-        tabSpec.setIndicator("Settings");
-        tabHost.addTab(tabSpec);
 
-        tabSpec = tabHost.newTabSpec("TrackInfo");
+
+        TabHost.TabSpec tabSpec = tabHost.newTabSpec("TrackInfo");
         tabSpec.setContent(R.id.tab_trackInfo);
         tabSpec.setIndicator("TrackInfo");
         tabHost.addTab(tabSpec);
@@ -61,6 +58,11 @@ public class MenuTab extends ActionBarActivity implements AdapterView.OnItemSele
         tabSpec = tabHost.newTabSpec("Saves");
         tabSpec.setContent(R.id.tab_saves);
         tabSpec.setIndicator("Saves");
+        tabHost.addTab(tabSpec);
+
+        tabSpec = tabHost.newTabSpec("settings");
+        tabSpec.setContent(R.id.tab_settings);
+        tabSpec.setIndicator("Settings");
         tabHost.addTab(tabSpec);
 
         tabSpec = tabHost.newTabSpec("Help");
