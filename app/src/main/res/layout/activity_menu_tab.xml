@@ -77,7 +77,6 @@
                         android:id="@+id/textView3"
                         android:layout_alignParentLeft="true"
                         android:layout_alignParentStart="true"
-
                         android:layout_below="@+id/textView2"
                         android:textSize="@dimen/abc_text_size_large_material" />
 
@@ -109,7 +108,44 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/trackInfo"/>
-                    </LinearLayout>
+
+                    <TextView
+                        android:textSize="20dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/trackInfo2"
+                        android:layout_below="@+id/trackInfo"
+                        android:text="Length:           3.6 km"/>
+                    <TextView
+                        android:textSize="20dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/trackInfo3"
+                        android:layout_below="@+id/trackInfo2"
+                        android:text="Time:              20 min"/>
+                    <TextView
+                        android:textSize="20dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/trackInfo4"
+                        android:layout_below="@+id/trackInfo3"
+                        android:text="Total ascent: 28 m"/>
+                    <TextView
+                        android:textSize="15dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/trackInfo5"
+                        android:layout_below="@+id/trackInfo4"
+                        android:text="Elevation profile:"/>
+                    <ImageView
+                        android:layout_below="@+id/trackInfo5"
+                        android:id="@+id/trackInfoElevation"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@mipmap/elevation"/>
+
+
+                </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/tab_saves"

@@ -208,7 +208,7 @@ public class MenuTab extends ActionBarActivity implements AdapterView.OnItemSele
 
             fos.write(string.getBytes());
             fos.close();
-            System.out.println(string);
+
             if(string==""){
                 return "Taky nic";
             }
