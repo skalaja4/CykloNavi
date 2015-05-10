@@ -359,7 +359,7 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
         protected Boolean doInBackground(Void... voids) {
 
             try {
-                Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.UK);
+                Geocoder geocoder = new Geocoder(getApplicationContext());
                 List<Address> results = geocoder.getFromLocationName(toSearch, 1);
 
                 if (results.size() == 0) {
