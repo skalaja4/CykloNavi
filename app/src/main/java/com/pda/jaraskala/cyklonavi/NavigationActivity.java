@@ -2,16 +2,25 @@ package com.pda.jaraskala.cyklonavi;
 
 import android.content.Context;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -29,12 +38,15 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
 public class NavigationActivity extends ActionBarActivity implements OnMapReadyCallback{
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private boolean navigationEnabled=false;
     private Marker mark=null;
+    private EditText mapSearchBox;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,6 +105,31 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
             }
         };
         manager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,listener);
+
+        //Search box
+
+        mapSearchBox = (EditText) findViewById(R.id.search);
+        mapSearchBox.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH ||
+                        actionId == EditorInfo.IME_ACTION_DONE ||
+                        actionId == EditorInfo.IME_ACTION_GO ||
+                        event.getAction() == KeyEvent.ACTION_DOWN &&
+                                event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+
+                    // hide virtual keyboard
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(mapSearchBox.getWindowToken(), 0);
+
+                    new SearchClicked(mapSearchBox.getText().toString()).execute();
+                    //mapSearchBox.setText("", TextView.BufferType.EDITABLE);
+                    return true;
+                }
+                return false;
+            }
+        });
+
+
     }
 
     @Override
@@ -308,4 +345,40 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
         }
 
     }
+
+
+    private class SearchClicked extends AsyncTask<Void, Void, Boolean> {
+        private String toSearch;
+        private Address address;
+
+        public SearchClicked(String toSearch) {
+            this.toSearch = toSearch;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+
+            try {
+                Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.UK);
+                List<Address> results = geocoder.getFromLocationName(toSearch, 1);
+
+                if (results.size() == 0) {
+                    return false;
+                }
+
+                address = results.get(0);
+
+                // cykloplanovac
+
+
+            } catch (Exception e) {
+                Log.e("", "Something went wrong: ", e);
+                return false;
+            }
+            return true;
+        }
+    }
+
+
 }
+
