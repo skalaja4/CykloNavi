@@ -1,5 +1,6 @@
 package com.pda.jaraskala.cyklonavi;
 
+import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Address;
@@ -14,12 +15,19 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -41,12 +49,13 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-public class NavigationActivity extends ActionBarActivity implements OnMapReadyCallback{
+public class NavigationActivity extends ActionBarActivity implements OnMapReadyCallback, GoogleMap.OnMapLongClickListener{
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private boolean navigationEnabled=false;
     private Marker mark=null;
     private EditText mapSearchBox;
+    private LatLng destination;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -174,9 +183,11 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
      */
     private void setUpMap() {
         BitmapDescriptor icon=BitmapDescriptorFactory.fromResource(R.drawable.kolo);
-        mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("kolo").icon(icon));
+        mMap.addMarker(new MarkerOptions().position(new LatLng(50.074, 14.448)).title("kolo").icon(icon));
+        //mMap.addMarker(new MarkerOptions().position(new LatLng(50.074, 14.448)));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                 new LatLng(50.083872, 14.437499), 15));
+        mMap.setOnMapLongClickListener(this);
 
         mMap.addPolyline(new PolylineOptions().geodesic(true)
                 .add(new LatLng(50.074, 14.448))
@@ -345,6 +356,44 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
         }
 
     }
+
+
+
+    @Override
+    public void onMapLongClick(LatLng latLng) {
+        LayoutInflater inflater = (LayoutInflater)getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+        View popupView = inflater.inflate(R.layout.popup_layout,null);
+
+        popupView.startAnimation(AnimationUtils.loadAnimation(this,R.anim.abc_slide_in_bottom));
+        final PopupWindow popupWindow = new PopupWindow(popupView, ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT);
+        Button popButton=(Button)popupView.findViewById(R.id.popButton);
+        mMap.clear();
+        BitmapDescriptor icon=BitmapDescriptorFactory.fromResource(R.mipmap.pointer1);
+        mMap.addMarker(new MarkerOptions().position(new LatLng(50.074, 14.448)).title("kolo").icon(icon));
+        mMap.addMarker(new MarkerOptions().position(latLng));
+        destination=latLng;
+
+        popButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                popupWindow.dismiss();
+                Intent intent;
+                intent = new Intent(getApplicationContext(), RouteChooser.class);
+                intent.putExtra("coordinates",destination);
+                startActivity(intent);
+
+
+
+            }
+        });
+
+        popupWindow.showAtLocation(popupView, Gravity.BOTTOM,0,0);
+
+
+
+    }
+
+
 
 
     private class SearchClicked extends AsyncTask<Void, Void, Boolean> {

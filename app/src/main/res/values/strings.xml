@@ -49,5 +49,6 @@
     <drawable name="Hotpink">#7D2252</drawable>
     <string name="select_Category">Select Category</string>
     <drawable name="darkgrey">#606060</drawable>
+    <string name="title_activity_route_chooser">RouteChooser</string>
 
 </resources>

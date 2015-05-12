@@ -4,9 +4,11 @@
     <style name="CustomActionBarTheme"
         parent="@style/Theme.AppCompat.Light">
         <item name="android:actionBarStyle">@style/MyActionBar</item>
-
+        <item name="android:actionBarTabTextStyle">@style/ActionBarTabTextStyle.Tabtheme</item>
+        <item name="actionBarTabTextStyle">@style/ActionBarTabTextStyle.Tabtheme</item>
         <!-- Support library compatibility -->
         <item name="actionBarStyle">@style/MyActionBar</item>
+
     </style>
 
     <!-- ActionBar styles -->
@@ -17,5 +19,10 @@
         <!-- Support library compatibility -->
         <item name="background">@drawable/ab_background_textured_example</item>
     </style>
+
+    <style name="ActionBarTabTextStyle.Tabtheme" parent="android:Widget.TabWidget">
+        <item name ="android:textSize">30sp</item>
+
+        </style>
 
 </resources>

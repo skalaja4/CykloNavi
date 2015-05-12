@@ -1,38 +1,36 @@
 package com.pda.jaraskala.cyklonavi;
 
-import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import com.google.android.gms.maps.model.LatLng;
 
 
-public class Help extends ActionBarActivity {
+public class RouteChooser extends ActionBarActivity {
+    LatLng direction;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.navigation_layout);
+        setContentView(R.layout.activity_route_chooser);
+
+        Bundle extras = getIntent().getExtras();
+        if(extras !=null){
+            direction = (LatLng) extras.get("coordinates");
+        }
+
 
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_menu_tab, menu);
+        getMenuInflater().inflate(R.menu.menu_route_chooser, menu);
         return true;
     }
 
@@ -48,9 +46,8 @@ public class Help extends ActionBarActivity {
             Intent intent;
             intent = new Intent(this, MenuTab.class);
             startActivity(intent);
-            return true;
+        return true;
         }
-
 
         return super.onOptionsItemSelected(item);
     }
