@@ -62,6 +62,9 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
     private LatLng myPosition;
     private PopupWindow popupWindow;
     private String route="";
+    private Button naviButton;
+    private MenuItem item;
+    boolean isRout = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,6 +74,10 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
         View popupView = inflater.inflate(R.layout.popup_layout,null);
         popupView.startAnimation(AnimationUtils.loadAnimation(this,R.anim.abc_slide_in_bottom));
         popupWindow = new PopupWindow(popupView, ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT);
+
+
+        naviButton = (Button) findViewById(R.id.button2);
+        naviButton.setVisibility(View.INVISIBLE);
 
 
 
@@ -85,6 +92,14 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
         myMark=mMap.addMarker(new MarkerOptions().position(myPosition).title("position").icon(icon));
 
 
+
+
+        naviButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
         LocationListener listener=new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
@@ -293,6 +308,14 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_navigation, menu);
+        item = menu.findItem(R.id.action_info);
+        if(isRout){
+            item.setVisible(true);
+        }else{
+            item.setVisible(false);
+        }
+
+
         return true;
     }
 
@@ -383,8 +406,12 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
         Button popButton=(Button)popupWindow.getContentView().findViewById(R.id.popButton);
 
 
-        destinationMark=null;
+        mMap.clear();
+        item.setVisible(false);
+        naviButton.setVisibility(View.INVISIBLE);
         destinationMark = mMap.addMarker(new MarkerOptions().position(latLng));
+        BitmapDescriptor icon=BitmapDescriptorFactory.fromResource(R.drawable.marker);
+        myMark=mMap.addMarker(new MarkerOptions().position(myPosition).title("position").icon(icon));
         destination=latLng;
         popupWindow.dismiss();
         popButton.setOnClickListener(new View.OnClickListener() {
@@ -427,7 +454,11 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
 
     @Override
     public void onMapClick(LatLng latLng) {
-        destinationMark=null;
+        mMap.clear();
+        item.setVisible(false);
+        naviButton.setVisibility(View.INVISIBLE);
+        BitmapDescriptor icon=BitmapDescriptorFactory.fromResource(R.drawable.marker);
+        myMark=mMap.addMarker(new MarkerOptions().position(myPosition).title("position").icon(icon));
         popupWindow.dismiss();
     }
 
@@ -472,7 +503,10 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
         if(route.equalsIgnoreCase("")){
 
         }else{
-            System.out.println("LETS GO");
+
+            naviButton.setVisibility(View.VISIBLE);
+            isRout=true;
+
             for(int i=0;i<route.length();i++){
                 if(route.charAt(i)=='l'&&route.charAt(i+1)=='e'&&route.charAt(i+2)=='n'){
                     break;
