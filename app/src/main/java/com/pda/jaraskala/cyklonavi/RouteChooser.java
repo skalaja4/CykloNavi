@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -35,10 +36,11 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 
-public class RouteChooser extends ActionBarActivity {
+public class RouteChooser extends ActionBarActivity implements AdapterView.OnItemClickListener {
     LatLng direction;
     LatLng myPostition;
     ListView listView;
+    String[] routes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +62,7 @@ public class RouteChooser extends ActionBarActivity {
         String[] input = new String[4];
         try {
             input = readRouts();
+            routes=input;
             String parsed[] = parseInput(input);
 
 
@@ -87,6 +90,8 @@ public class RouteChooser extends ActionBarActivity {
 
 
             listView.setAdapter(new MyAdapter(arrayList,this));
+            listView.setOnItemClickListener(this);
+
 
 
         } catch (IOException e) {
@@ -208,6 +213,19 @@ public class RouteChooser extends ActionBarActivity {
         }
 
         return output;
+    }
+
+
+
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+        Intent intent;
+        intent = new Intent(getApplicationContext(), NavigationActivity.class);
+        intent.putExtra("route",routes[position]);
+        startActivity(intent);
+
     }
 }
 class SingleRow{

@@ -83,6 +83,10 @@
             android:name=".RouteChooser"
             android:label="@string/title_activity_route_chooser" >
         </activity>
+        <activity
+            android:name=".RoutMap"
+            android:label="@string/title_activity_rout_map" >
+        </activity>
     </application>
 
 </manifest>

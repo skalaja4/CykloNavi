@@ -55,5 +55,6 @@
     <string name="select_Category">Select Category</string>
     <drawable name="darkgrey">#606060</drawable>
     <string name="title_activity_route_chooser">RouteChooser</string>
+    <string name="title_activity_rout_map">RoutMap</string>
 
 </resources>

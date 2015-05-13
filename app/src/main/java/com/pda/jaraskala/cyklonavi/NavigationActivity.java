@@ -2,6 +2,7 @@ package com.pda.jaraskala.cyklonavi;
 
 import android.app.ActionBar;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
@@ -46,10 +47,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class NavigationActivity extends ActionBarActivity implements OnMapReadyCallback, GoogleMap.OnMapLongClickListener{
+public class NavigationActivity extends ActionBarActivity implements OnMapReadyCallback, GoogleMap.OnMapLongClickListener, GoogleMap.OnMapClickListener{
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private boolean navigationEnabled=false;
@@ -57,31 +59,25 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
     private EditText mapSearchBox;
     private LatLng destination;
     private LatLng myPosition;
+    private PopupWindow popupWindow;
+    private String route="";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation);
 
-        String FILENAME = "cykloNaviSettings";
-        String string = "";
-        byte[] bytes =new byte[255];
 
-        try {
-            FileOutputStream fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
-            string="1a2b3c";
-            fos.write(string.getBytes());
-            fos.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        LayoutInflater inflater = (LayoutInflater)getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+        View popupView = inflater.inflate(R.layout.popup_layout,null);
 
+        popupView.startAnimation(AnimationUtils.loadAnimation(this,R.anim.abc_slide_in_bottom));
+        popupWindow = new PopupWindow(popupView, ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT);
 
         setUpMapIfNeeded();
         mMap.setMyLocationEnabled(true);
 
         LocationManager manager=(LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+
         BitmapDescriptor icon=BitmapDescriptorFactory.fromResource(R.mipmap.pointer2);
         mark=mMap.addMarker(new MarkerOptions().position(new LatLng(0,0)).title("pozice").icon(icon));
         LocationListener listener=new LocationListener() {
@@ -193,11 +189,21 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
         BitmapDescriptor icon=BitmapDescriptorFactory.fromResource(R.drawable.kolo);
         mMap.addMarker(new MarkerOptions().position(new LatLng(50.074, 14.448)).title("kolo").icon(icon));
         //mMap.addMarker(new MarkerOptions().position(new LatLng(50.074, 14.448)));
+
+        Bundle extras = getIntent().getExtras();
+        if(extras !=null){
+            System.out.println("ASKED");
+            route= (String) extras.get("route");
+
+        }
+
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                 new LatLng(50.083872, 14.437499), 15));
         mMap.setOnMapLongClickListener(this);
+        mMap.setOnMapClickListener(this);
 
-        mMap.addPolyline(new PolylineOptions().geodesic(true)
+
+        /*mMap.addPolyline(new PolylineOptions().geodesic(true)
                 .add(new LatLng(50.074, 14.448))
                 .add(new LatLng(50.077, 14.448))
                 .add(new LatLng(50.078, 14.448))
@@ -220,7 +226,8 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
                 .add(new LatLng(50.089510, 14.422672))
                 .add(new LatLng(50.089290, 14.422796))
                 .add(new LatLng(50.089331, 14.42379))
-        );
+        );*/
+        parseRout();
 
     }
 
@@ -367,20 +374,21 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
 
 
 
+
     @Override
     public void onMapLongClick(LatLng latLng) {
-        LayoutInflater inflater = (LayoutInflater)getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
-        View popupView = inflater.inflate(R.layout.popup_layout,null);
+        //LayoutInflater inflater = (LayoutInflater)getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+        //View popupView = inflater.inflate(R.layout.popup_layout,null);
 
-        popupView.startAnimation(AnimationUtils.loadAnimation(this,R.anim.abc_slide_in_bottom));
-        final PopupWindow popupWindow = new PopupWindow(popupView, ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT);
-        Button popButton=(Button)popupView.findViewById(R.id.popButton);
+       // popupView.startAnimation(AnimationUtils.loadAnimation(this,R.anim.abc_slide_in_bottom));
+        //final PopupWindow popupWindow = new PopupWindow(popupView, ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT);
+        Button popButton=(Button)popupWindow.getContentView().findViewById(R.id.popButton);
         mMap.clear();
         BitmapDescriptor icon=BitmapDescriptorFactory.fromResource(R.mipmap.pointer1);
         mMap.addMarker(new MarkerOptions().position(new LatLng(50.074, 14.448)).title("kolo").icon(icon));
         mMap.addMarker(new MarkerOptions().position(latLng));
         destination=latLng;
-
+        popupWindow.dismiss();
         popButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -397,13 +405,33 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
             }
         });
 
-        popupWindow.showAtLocation(popupView, Gravity.BOTTOM,0,0);
+        Geocoder gCoder = new Geocoder(this);
+
+        try {
+            List<Address> addresses = gCoder.getFromLocation(latLng.latitude,latLng.longitude,1);
+            TextView tv = (TextView) popupWindow.getContentView().findViewById(R.id.adress);
+            if(addresses!= null && addresses.size()>0){
+
+                tv.setText(addresses.get(0).getThoroughfare()+" "+addresses.get(0).getFeatureName());
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        popupWindow.showAtLocation(popupWindow.getContentView(), Gravity.BOTTOM,0,0);
+
 
 
 
     }
 
 
+    @Override
+    public void onMapClick(LatLng latLng) {
+        mMap.clear();
+        popupWindow.dismiss();
+    }
 
 
     private class SearchClicked extends AsyncTask<Void, Void, Boolean> {
@@ -439,5 +467,59 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
     }
 
 
+    public void parseRout(){
+        System.out.println("PARSE");
+        ArrayList<String> latitudes= new ArrayList<String>();
+        ArrayList<String> lontitudes= new ArrayList<String>();
+        if(route.equalsIgnoreCase("")){
+
+        }else{
+            System.out.println("LETS GO");
+            for(int i=0;i<route.length();i++){
+                if(route.charAt(i)=='l'&&route.charAt(i+1)=='e'&&route.charAt(i+2)=='n'){
+                    break;
+                }
+                String latitude="";
+                String lontitude="";
+                if(route.charAt(i)=='l'&&route.charAt(i+1)=='a'&&route.charAt(i+2)=='t'){
+                    i=i+8;
+                    for (int j=0;j<8;j++){
+                        if(j==2){
+                            latitude+=".";
+                        }
+                        i++;
+                        latitude+=route.charAt(i);
+
+                    }
+                    latitudes.add(latitude);
+                }
+                if(route.charAt(i)=='l'&&route.charAt(i+1)=='o'&&route.charAt(i+2)=='n'){
+                    i=i+8;
+                    for (int j=0;j<8;j++){
+                        if(j==2){
+                            lontitude+=".";
+                        }
+                        i++;
+                        lontitude+=route.charAt(i);
+
+                    }
+                    lontitudes.add(lontitude);
+                }
+
+            }
+            PolylineOptions line = new PolylineOptions();
+            for(int i=0;i<latitudes.size();i++){
+
+                line.geodesic(true).add(new LatLng(Double.parseDouble(latitudes.get(i)), Double.parseDouble(lontitudes.get(i))));
+                System.out.println(Double.parseDouble(latitudes.get(i))+" " +Double.parseDouble(lontitudes.get(i)));
+            }
+            mMap.addPolyline(line);
+
+
+
+        }
+
+
+    }
 }
 

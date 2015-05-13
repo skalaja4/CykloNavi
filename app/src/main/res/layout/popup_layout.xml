@@ -6,14 +6,24 @@
     android:background="@color/background_material_light"
     >
 
+    <TextView
+        android:id="@+id/adress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Husinecka 22"
+        android:textSize="25dp"
+        android:layout_alignBottom="@+id/popButton"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_toLeftOf="@+id/popButton"
+        android:layout_toStartOf="@+id/popButton" />
     <Button
         android:id="@+id/popButton"
         android:text="Choose destination"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
 
