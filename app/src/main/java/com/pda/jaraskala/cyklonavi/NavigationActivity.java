@@ -55,7 +55,8 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private boolean navigationEnabled=false;
-    private Marker mark=null;
+    private Marker myMark=null;
+    private Marker destinationMark=null;
     private EditText mapSearchBox;
     private LatLng destination;
     private LatLng myPosition;
@@ -66,20 +67,24 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation);
 
-
         LayoutInflater inflater = (LayoutInflater)getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
         View popupView = inflater.inflate(R.layout.popup_layout,null);
-
         popupView.startAnimation(AnimationUtils.loadAnimation(this,R.anim.abc_slide_in_bottom));
         popupWindow = new PopupWindow(popupView, ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT);
+
+
+
+        LocationManager manager=(LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+
+        myPosition=new LatLng(50.078455,14.400039);
 
         setUpMapIfNeeded();
         mMap.setMyLocationEnabled(true);
 
-        LocationManager manager=(LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        BitmapDescriptor icon=BitmapDescriptorFactory.fromResource(R.drawable.marker);
+        myMark=mMap.addMarker(new MarkerOptions().position(myPosition).title("position").icon(icon));
 
-        BitmapDescriptor icon=BitmapDescriptorFactory.fromResource(R.mipmap.pointer2);
-        mark=mMap.addMarker(new MarkerOptions().position(new LatLng(0,0)).title("pozice").icon(icon));
+
         LocationListener listener=new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
@@ -89,8 +94,9 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
                     mMap.animateCamera(CameraUpdateFactory.newLatLng(position));
 
                 }
-                mark.setPosition(position);
+                myMark.setPosition(position);
                 myPosition=position;
+
                 //mark=mMap.addMarker(new MarkerOptions().position(position).title("pozice").icon(icon));
 
 
@@ -186,9 +192,6 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
      * This should only be called once and when we are sure that {@link #mMap} is not null.
      */
     private void setUpMap() {
-        BitmapDescriptor icon=BitmapDescriptorFactory.fromResource(R.drawable.kolo);
-        mMap.addMarker(new MarkerOptions().position(new LatLng(50.074, 14.448)).title("kolo").icon(icon));
-        //mMap.addMarker(new MarkerOptions().position(new LatLng(50.074, 14.448)));
 
         Bundle extras = getIntent().getExtras();
         if(extras !=null){
@@ -198,7 +201,7 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
         }
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                new LatLng(50.083872, 14.437499), 15));
+                new LatLng(myPosition.latitude, myPosition.longitude), 15));
         mMap.setOnMapLongClickListener(this);
         mMap.setOnMapClickListener(this);
 
@@ -249,7 +252,7 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
     @Override
     protected void onStop() {
         super.onStop();
-        itIsLast();
+       // itIsLast();
 
     }
 
@@ -268,7 +271,7 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
          // navigationEnabled=!navigationEnabled;
 
             //test query na google maps
-            Uri gmmIntentUri = Uri.parse("geo:0,0?q=Evropska+Praha+6");
+            //Uri gmmIntentUri = Uri.parse("geo:0,0?q=Evropska+Praha+6");
 //            Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
 //            mapIntent.setPackage("com.google.android.apps.maps");
 //            startActivity(mapIntent);
@@ -377,16 +380,11 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
 
     @Override
     public void onMapLongClick(LatLng latLng) {
-        //LayoutInflater inflater = (LayoutInflater)getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
-        //View popupView = inflater.inflate(R.layout.popup_layout,null);
-
-       // popupView.startAnimation(AnimationUtils.loadAnimation(this,R.anim.abc_slide_in_bottom));
-        //final PopupWindow popupWindow = new PopupWindow(popupView, ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT);
         Button popButton=(Button)popupWindow.getContentView().findViewById(R.id.popButton);
-        mMap.clear();
-        BitmapDescriptor icon=BitmapDescriptorFactory.fromResource(R.mipmap.pointer1);
-        mMap.addMarker(new MarkerOptions().position(new LatLng(50.074, 14.448)).title("kolo").icon(icon));
-        mMap.addMarker(new MarkerOptions().position(latLng));
+
+
+        destinationMark=null;
+        destinationMark = mMap.addMarker(new MarkerOptions().position(latLng));
         destination=latLng;
         popupWindow.dismiss();
         popButton.setOnClickListener(new View.OnClickListener() {
@@ -429,7 +427,7 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
 
     @Override
     public void onMapClick(LatLng latLng) {
-        mMap.clear();
+        destinationMark=null;
         popupWindow.dismiss();
     }
 

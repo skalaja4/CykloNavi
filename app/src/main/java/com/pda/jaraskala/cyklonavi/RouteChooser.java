@@ -134,7 +134,7 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
     public String[] readRouts() throws IOException {
         StringBuilder builder = new StringBuilder();
         HttpClient client = new DefaultHttpClient();
-        HttpGet httpGet = new HttpGet("http://its.felk.cvut.cz/cycle-planner-1.1.3-SNAPSHOT-junctions/bicycleJourneyPlanning/planJourneys?startLon=14.399960798705873&startLat=50.07855563717151&endLon=14.432919783081074&endLat=50.07695827013837&avgSpeed=20");
+        HttpGet httpGet = new HttpGet("http://its.felk.cvut.cz/cycle-planner-1.1.3-SNAPSHOT-junctions/bicycleJourneyPlanning/planJourneys?startLon="+myPostition.longitude+"&startLat="+myPostition.latitude+"&endLon="+direction.longitude+"&endLat="+direction.latitude+"&avgSpeed=20");
 
             HttpResponse response = client.execute(httpGet);
             HttpEntity entity = response.getEntity();
