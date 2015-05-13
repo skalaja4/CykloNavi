@@ -87,6 +87,7 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
 
         setUpMapIfNeeded();
         mMap.setMyLocationEnabled(true);
+        mMap.getUiSettings().setRotateGesturesEnabled(false);
 
         BitmapDescriptor icon=BitmapDescriptorFactory.fromResource(R.drawable.marker);
         myMark=mMap.addMarker(new MarkerOptions().position(myPosition).title("position").icon(icon));

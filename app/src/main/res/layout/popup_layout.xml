@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Husinecka 22"
-        android:textSize="25dp"
+        android:textSize="15dp"
         android:layout_alignBottom="@+id/popButton"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
