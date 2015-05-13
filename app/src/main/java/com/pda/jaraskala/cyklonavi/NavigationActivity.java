@@ -56,6 +56,7 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
     private Marker mark=null;
     private EditText mapSearchBox;
     private LatLng destination;
+    private LatLng myPosition;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,6 +94,7 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
 
                 }
                 mark.setPosition(position);
+                myPosition=position;
                 //mark=mMap.addMarker(new MarkerOptions().position(position).title("pozice").icon(icon));
 
 
@@ -137,6 +139,12 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
                 return false;
             }
         });
+
+
+    }
+
+    protected void onPause(){
+        super.onPause();
 
 
     }
@@ -379,7 +387,9 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
                 popupWindow.dismiss();
                 Intent intent;
                 intent = new Intent(getApplicationContext(), RouteChooser.class);
-                intent.putExtra("coordinates",destination);
+
+                intent.putExtra("coordinates1",destination);
+                intent.putExtra("coordinates2",myPosition);
                 startActivity(intent);
 
 
