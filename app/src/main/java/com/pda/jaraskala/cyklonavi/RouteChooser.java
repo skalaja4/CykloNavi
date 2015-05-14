@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.StrictMode;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -158,6 +159,13 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
             intent = new Intent(this, MenuTab.class);
             startActivity(intent);
         return true;
+        }
+        if(id == android.R.id.home){
+
+            NavUtils.navigateUpFromSameTask(this);
+            return true;
+
+
         }
 
         return super.onOptionsItemSelected(item);

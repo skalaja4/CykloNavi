@@ -8,4 +8,13 @@
         android:orderInCategory="100"
 
         app:showAsAction="always" />
+    <item android:id="@+id/action_settings_load"
+        android:title="Save"
+        app:showAsAction="never" />
+    <item android:id="@+id/action_settings_settings"
+        android:title="Settings"
+        app:showAsAction="never" />
+    <item android:id="@+id/action_help"
+        android:title="Help"
+        app:showAsAction="never" />
 </menu>

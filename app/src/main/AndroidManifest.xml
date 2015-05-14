@@ -50,6 +50,7 @@
         </activity>
         <activity
             android:name=".RouteChooser"
+            android:parentActivityName=".NavigationActivity"
             android:label="@string/title_activity_route_chooser" >
         </activity>
     </application>

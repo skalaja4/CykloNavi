@@ -9,14 +9,21 @@
         android:title="@string/action_info"
         android:icon="@drawable/action_info"
         android:orderInCategory="100"
-
         app:showAsAction="always" />
-    <item android:id="@+id/action_settings"
 
+    <item android:id="@+id/action_settings"
         android:title="@string/action_settings"
         android:icon="@drawable/action_settings"
         android:orderInCategory="100"
-
         app:showAsAction="always" />
+    <item android:id="@+id/action_settings_load"
+        android:title="Load"
+        app:showAsAction="never" />
+    <item android:id="@+id/action_settings_settings"
+        android:title="Settings"
+        app:showAsAction="never" />
+    <item android:id="@+id/action_help"
+        android:title="Help"
+        app:showAsAction="never" />
 
 </menu>
