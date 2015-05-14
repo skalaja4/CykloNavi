@@ -44,4 +44,5 @@
         android:layout_below="@+id/search"
         android:layout_alignLeft="@+id/search"
         android:layout_alignStart="@+id/search" />
+
 </RelativeLayout>

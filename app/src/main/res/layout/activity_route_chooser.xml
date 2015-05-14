@@ -1,4 +1,4 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
@@ -8,12 +8,22 @@
 
     <ListView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="324dp"
         android:id="@+id/listViewRoute"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
-        android:clickable="false"
-        android:drawSelectorOnTop="false" />
-</RelativeLayout>
+        android:clickable="true" />
+
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        android:id="@+id/map"
+        tools:context="com.pda.jaraskala.cyklonavi.NavigationActivity"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_weight="1"
+        android:scrollbars="vertical"
+        />
+</TableLayout>

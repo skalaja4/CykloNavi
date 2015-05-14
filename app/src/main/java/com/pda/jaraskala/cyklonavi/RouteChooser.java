@@ -3,6 +3,7 @@ package com.pda.jaraskala.cyklonavi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.os.StrictMode;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -16,7 +17,15 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -41,6 +50,10 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
     LatLng myPostition;
     ListView listView;
     String[] routes;
+    private LatLng destination;
+    private LatLng myPosition;
+    private GoogleMap mMap;
+    private Marker myMark=null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +71,13 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
         StrictMode.ThreadPolicy policy = new StrictMode.
                 ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
+
+
+        myPosition=new LatLng(50.078455,14.400039);
+
+
+
+
 
         String[] input = new String[4];
         try {
@@ -100,7 +120,12 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
 
 
 
+        setUpMapIfNeeded();
+        mMap.setMyLocationEnabled(true);
+        mMap.getUiSettings().setRotateGesturesEnabled(false);
 
+        BitmapDescriptor icon= BitmapDescriptorFactory.fromResource(R.drawable.marker);
+        myMark=mMap.addMarker(new MarkerOptions().position(myPosition).title("position").icon(icon));
 
     }
 
@@ -227,6 +252,94 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
         startActivity(intent);
 
     }
+
+    private void setUpMapIfNeeded() {
+        // Do a null check to confirm that we have not already instantiated the map.
+        if (mMap == null) {
+            // Try to obtain the map from the SupportMapFragment.
+            mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
+                    .getMap();
+            // Check if we were successful in obtaining the map.
+            if (mMap != null) {
+                setUpMap();
+            }
+        }
+    }
+
+    /**
+     * This is where we can add markers or lines, add listeners or move the camera. In this case, we
+     * just add a marker near Africa.
+     * <p/>
+     * This should only be called once and when we are sure that {@link #mMap} is not null.
+     */
+    private void setUpMap() {
+
+
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                new LatLng(myPosition.latitude, myPosition.longitude), 15));
+
+        mMap.addPolyline(parseRout(routes[0],Color.argb(255, 102, 0, 204)));
+        mMap.addPolyline(parseRout(routes[1],Color.argb(255,0,255,0)));
+        mMap.addPolyline(parseRout(routes[2],Color.argb(255,255,0,0)));
+        mMap.addPolyline(parseRout(routes[3],Color.argb(255, 0, 0, 0)));
+    }
+
+    public PolylineOptions parseRout(String route, int color) {
+
+        ArrayList<String> latitudes = new ArrayList<String>();
+        ArrayList<String> lontitudes = new ArrayList<String>();
+
+
+
+            for (int i = 0; i < route.length(); i++) {
+                if (route.charAt(i) == 'l' && route.charAt(i + 1) == 'e' && route.charAt(i + 2) == 'n') {
+                    break;
+                }
+                String latitude = "";
+                String lontitude = "";
+                if (route.charAt(i) == 'l' && route.charAt(i + 1) == 'a' && route.charAt(i + 2) == 't') {
+                    i = i + 8;
+                    for (int j = 0; j < 8; j++) {
+                        if (j == 2) {
+                            latitude += ".";
+                        }
+                        i++;
+                        latitude += route.charAt(i);
+
+                    }
+                    latitudes.add(latitude);
+                }
+                if (route.charAt(i) == 'l' && route.charAt(i + 1) == 'o' && route.charAt(i + 2) == 'n') {
+                    i = i + 8;
+                    for (int j = 0; j < 8; j++) {
+                        if (j == 2) {
+                            lontitude += ".";
+                        }
+                        i++;
+                        lontitude += route.charAt(i);
+
+                    }
+                    lontitudes.add(lontitude);
+                }
+
+            }
+            PolylineOptions line = new PolylineOptions();
+            for (int i = 0; i < latitudes.size(); i++) {
+
+                line.geodesic(true).add(new LatLng(Double.parseDouble(latitudes.get(i)), Double.parseDouble(lontitudes.get(i))));
+                System.out.println(Double.parseDouble(latitudes.get(i)) + " " + Double.parseDouble(lontitudes.get(i)));
+            }
+            line.color(color);
+            //line.color(Color.argb(255, 102, 0, 204));
+            //line.color(Color.argb(255,0,255,0));
+            //line.color(Color.argb(255,255,0,0));
+            //line.color(Color.argb(255,0,0,0));
+            //mMap.addPolyline(line);
+        return line;
+
+
+    }
+
 }
 class SingleRow{
     String title;
@@ -275,4 +388,6 @@ class MyAdapter extends BaseAdapter{
 
         return row;
     }
+
+
 }

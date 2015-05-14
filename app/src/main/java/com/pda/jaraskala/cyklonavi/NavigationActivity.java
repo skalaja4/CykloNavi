@@ -4,6 +4,7 @@ import android.app.ActionBar;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -464,6 +465,8 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
     }
 
 
+
+
     private class SearchClicked extends AsyncTask<Void, Void, Boolean> {
         private String toSearch;
         private Address address;
@@ -546,6 +549,10 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
                 line.geodesic(true).add(new LatLng(Double.parseDouble(latitudes.get(i)), Double.parseDouble(lontitudes.get(i))));
                 System.out.println(Double.parseDouble(latitudes.get(i))+" " +Double.parseDouble(lontitudes.get(i)));
             }
+            line.color(Color.argb(255,102,0,204));
+            //line.color(Color.argb(255,0,255,0));
+            //line.color(Color.argb(255,255,0,0));
+            //line.color(Color.argb(255,0,0,0));
             mMap.addPolyline(line);
 
 
