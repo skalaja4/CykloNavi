@@ -1,0 +1,13 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="com.pda.jaraskala.cyklonavi.Help">
+
+    <TextView android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam sit amet gravida nisi. Mauris id libero pellentesque, vehicula mi vitae, vestibulum justo. Vivamus porta est at urna imperdiet condimentum. Donec ut dui eget est posuere luctus vitae pulvinar orci. Praesent nibh elit, aliquet vel placerat et, consequat nec elit. Aliquam erat volutpat. Pellentesque finibus quam orci, quis rutrum massa vestibulum vitae. Suspendisse potenti. Suspendisse justo nisl, elementum a enim quis, dictum ornare mauris. Quisque in tellus eu dolor tempor eleifend porttitor sit amet mi. Proin lobortis rhoncus nunc, quis dictum sem pellentesque sodales. Integer mattis accumsan ante non feugiat. Mauris ac lectus sem. Duis porttitor lobortis est id ullamcorper. In eu diam vel justo mollis interdum."
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+</RelativeLayout>

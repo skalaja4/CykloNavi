@@ -31,7 +31,7 @@ public class MenuTab extends ActionBarActivity implements AdapterView.OnItemSele
     String[] strings1 ={"English","Čeština"};
     String[] strings2 ={"km","mile"};
     String[] strings3 ={"Pointer 1","Pointer 2", "Pointer 3"};
-    int arr_images[] ={R.mipmap.pointer1,R.mipmap.pointer2,R.mipmap.pointer3};
+    int arr_images[] ={R.drawable.marker,R.drawable.marker1,R.drawable.marker2};
     Spinner mySpinner1;
     Spinner mySpinner2;
     Spinner mySpinner3;
@@ -118,6 +118,7 @@ public class MenuTab extends ActionBarActivity implements AdapterView.OnItemSele
         if(id == android.R.id.home){
 
             NavUtils.navigateUpFromSameTask(this);
+
             return true;
 
 

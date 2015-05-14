@@ -1,6 +1,8 @@
 package com.pda.jaraskala.cyklonavi;
 
 import android.app.ActionBar;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -14,6 +16,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -63,8 +66,8 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
     private LatLng myPosition;
     private PopupWindow popupWindow;
     private String route="";
-    private Button naviButton;
-    private MenuItem item;
+
+
     boolean isRout = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,8 +80,8 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
         popupWindow = new PopupWindow(popupView, ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT);
 
 
-        naviButton = (Button) findViewById(R.id.button2);
-        naviButton.setVisibility(View.INVISIBLE);
+
+
 
 
 
@@ -96,12 +99,7 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
 
 
 
-        naviButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-            }
-        });
         LocationListener listener=new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
@@ -159,7 +157,8 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
             }
         });
 
-
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                new LatLng(myPosition.latitude, myPosition.longitude), 15));
     }
 
     protected void onPause(){
@@ -212,7 +211,7 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
 
         Bundle extras = getIntent().getExtras();
         if(extras !=null){
-            System.out.println("ASKED");
+
             route= (String) extras.get("route");
 
         }
@@ -247,7 +246,7 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
                 .add(new LatLng(50.089290, 14.422796))
                 .add(new LatLng(50.089331, 14.42379))
         );*/
-        parseRout();
+        //parseRout();
 
     }
 
@@ -281,9 +280,10 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_settings_settings) {
             Intent intent;
-            intent = new Intent(this, MenuTab.class);
+            intent = new Intent(this, Settings.class);
+            intent.putExtra("intent",new Intent(this, NavigationActivity.class));
             startActivity(intent);
          // navigationEnabled=!navigationEnabled;
 
@@ -297,7 +297,13 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
 
             return true;
         }
-
+        if(id==R.id.action_settings_help){
+            Intent intent;
+            intent = new Intent(this, Help.class);
+            intent.putExtra("intent",new Intent(this, NavigationActivity.class));
+            startActivity(intent);
+            return true;
+        }
 
 
 
@@ -310,12 +316,7 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_navigation, menu);
-        item = menu.findItem(R.id.action_info);
-        if(isRout){
-            item.setVisible(true);
-        }else{
-            item.setVisible(false);
-        }
+
 
 
         return true;
@@ -409,8 +410,8 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
 
 
         mMap.clear();
-        item.setVisible(false);
-        naviButton.setVisibility(View.INVISIBLE);
+
+
         destinationMark = mMap.addMarker(new MarkerOptions().position(latLng));
         BitmapDescriptor icon=BitmapDescriptorFactory.fromResource(R.drawable.marker);
         myMark=mMap.addMarker(new MarkerOptions().position(myPosition).title("position").icon(icon));
@@ -422,9 +423,9 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
                 popupWindow.dismiss();
                 Intent intent;
                 intent = new Intent(getApplicationContext(), RouteChooser.class);
-
-                intent.putExtra("coordinates1",destination);
                 intent.putExtra("coordinates2",myPosition);
+                intent.putExtra("coordinates1",destination);
+
                 startActivity(intent);
 
 
@@ -457,8 +458,7 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
     @Override
     public void onMapClick(LatLng latLng) {
         mMap.clear();
-        item.setVisible(false);
-        naviButton.setVisibility(View.INVISIBLE);
+
         BitmapDescriptor icon=BitmapDescriptorFactory.fromResource(R.drawable.marker);
         myMark=mMap.addMarker(new MarkerOptions().position(myPosition).title("position").icon(icon));
         popupWindow.dismiss();
@@ -508,7 +508,7 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
 
         }else{
 
-            naviButton.setVisibility(View.VISIBLE);
+
             isRout=true;
 
             for(int i=0;i<route.length();i++){

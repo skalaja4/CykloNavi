@@ -48,35 +48,41 @@ import java.util.Collections;
 
 public class RouteChooser extends ActionBarActivity implements AdapterView.OnItemClickListener {
     LatLng direction;
-    LatLng myPostition;
+    LatLng myPosition;
     ListView listView;
     String[] routes;
     String[] cameraBorder;
     ArrayList<PolylineOptions> lines = new ArrayList<PolylineOptions>();
 
-    private LatLng myPosition;
+    //private LatLng myPosition;
     private GoogleMap mMap;
     private Marker myMark=null;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onResume() {
+        super.onResume();
         setContentView(R.layout.activity_route_chooser);
         listView=(ListView)findViewById(R.id.listViewRoute);
         listView.setOnItemClickListener(this);
 
 
         Bundle extras = getIntent().getExtras();
+        System.out.println("JOOO");
         if(extras !=null){
+            System.out.println("ANOOO");
             direction = (LatLng) extras.get("coordinates1");
-            myPostition = (LatLng) extras.get("coordinates2");
+            myPosition = (LatLng) extras.get("coordinates2");
+            System.out.println(direction.latitude);
+            System.out.println(myPosition.latitude);
+
+
         }
         StrictMode.ThreadPolicy policy = new StrictMode.
                 ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
 
-        myPosition=new LatLng(50.078455,14.400039);
+        //myPosition=new LatLng(50.078455,14.400039);
 
 
 
@@ -90,41 +96,33 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
             e.printStackTrace();
         }
         routes=input;
-            String parsed[] = parseInput(input);
+        String parsed[] = parseInput(input);
 
 
 
 
-            ArrayList<SingleRow> arrayList = new ArrayList<SingleRow>();
+        ArrayList<SingleRow> arrayList = new ArrayList<SingleRow>();
 
 
-            Resources res = getResources();
-            String[] titles = res.getStringArray(R.array.typeRouteTitles);
-            int[] colors={Color.argb(255, 102, 0, 204),Color.argb(255,0,255,0),Color.argb(255,255,0,0),Color.argb(255,0,0,0)};
-            for(int i=0;i<parsed.length;i++){
-                int k=0;
-                float[] routeDescription = new float[4];
-                for(int j=0;j<parsed[i].length();j++){
-                    if(parsed[i].charAt(j)!=' '){
+        Resources res = getResources();
+        String[] titles = res.getStringArray(R.array.typeRouteTitles);
+        int[] colors={Color.argb(255, 102, 0, 204),Color.argb(255,0,255,0),Color.argb(255,255,0,0),Color.argb(255,0,0,0)};
+        for(int i=0;i<parsed.length;i++){
+            int k=0;
+            float[] routeDescription = new float[4];
+            for(int j=0;j<parsed[i].length();j++){
+                if(parsed[i].charAt(j)!=' '){
                     routeDescription[k]=(routeDescription[k]*10 +(parsed[i].charAt(j)-48));
-                    }else{
+                }else{
                     k++;
-                    }
                 }
-                arrayList.add(new SingleRow(titles[i],routeDescription[0]/1000+" km, "+routeDescription[1]/100 +" min, ascent: "+routeDescription[2]+" m",colors[i]));
             }
+            arrayList.add(new SingleRow(titles[i],routeDescription[0]/1000+" km, "+(int)routeDescription[1]/100 +" min, ascent: "+routeDescription[2]+" m",colors[i]));
+        }
 
 
 
-            listView.setAdapter(new MyAdapter(arrayList,this));
-
-
-
-
-
-
-
-
+        listView.setAdapter(new MyAdapter(arrayList,this));
 
 
         setUpMapIfNeeded();
@@ -132,8 +130,14 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
         mMap.getUiSettings().setRotateGesturesEnabled(false);
         mMap.getUiSettings().setAllGesturesEnabled(false);
 
-        BitmapDescriptor icon= BitmapDescriptorFactory.fromResource(R.drawable.marker);
-        myMark=mMap.addMarker(new MarkerOptions().position(myPosition).title("position").icon(icon));
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+       // BitmapDescriptor icon= BitmapDescriptorFactory.fromResource(R.drawable.marker);
+        //myMark=mMap.addMarker(new MarkerOptions().position(myPosition).title("position").icon(icon));
 
     }
 
@@ -154,12 +158,36 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+
+        if (id == R.id.action_settings_settings) {
             Intent intent;
-            intent = new Intent(this, MenuTab.class);
+            intent = new Intent(this, Settings.class);
+            intent.putExtra("intent",new Intent(this, RouteChooser.class));
+            intent.putExtra("coordinates1",direction);
+            intent.putExtra("coordinates2",myPosition);
             startActivity(intent);
-        return true;
+            // navigationEnabled=!navigationEnabled;
+
+            //test query na google maps
+            //Uri gmmIntentUri = Uri.parse("geo:0,0?q=Evropska+Praha+6");
+//            Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+//            mapIntent.setPackage("com.google.android.apps.maps");
+//            startActivity(mapIntent);
+
+
+
+            return true;
         }
+        if(id==R.id.action_settings_help){
+            Intent intent;
+            intent = new Intent(this, Help.class);
+            intent.putExtra("intent",new Intent(this, RouteChooser.class));
+            intent.putExtra("coordinates1",direction);
+            intent.putExtra("coordinates2",myPosition);
+            startActivity(intent);
+            return true;
+        }
+
         if(id == android.R.id.home){
 
             NavUtils.navigateUpFromSameTask(this);
@@ -174,7 +202,7 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
     public String[] readRouts() throws IOException {
         StringBuilder builder = new StringBuilder();
         HttpClient client = new DefaultHttpClient();
-        HttpGet httpGet = new HttpGet("http://its.felk.cvut.cz/cycle-planner-1.1.3-SNAPSHOT-junctions/bicycleJourneyPlanning/planJourneys?startLon="+myPostition.longitude+"&startLat="+myPostition.latitude+"&endLon="+direction.longitude+"&endLat="+direction.latitude+"&avgSpeed=20");
+        HttpGet httpGet = new HttpGet("http://its.felk.cvut.cz/cycle-planner-1.1.3-SNAPSHOT-junctions/bicycleJourneyPlanning/planJourneys?startLon="+myPosition.longitude+"&startLat="+myPosition.latitude+"&endLon="+direction.longitude+"&endLat="+direction.latitude+"&avgSpeed=20");
 
             HttpResponse response = client.execute(httpGet);
             HttpEntity entity = response.getEntity();
@@ -349,7 +377,7 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
 
 
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(rohy(),600,600,0));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(rohy(),500,500,0));
         //mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(rohy(),100,100,5));
 
         mMap.addPolyline(parseRout(routes[0],Color.argb(255, 102, 0, 204)));
@@ -401,7 +429,7 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
             for (int i = 0; i < latitudes.size(); i++) {
 
                 line.geodesic(true).add(new LatLng(Double.parseDouble(latitudes.get(i)), Double.parseDouble(lontitudes.get(i))));
-                System.out.println(Double.parseDouble(latitudes.get(i)) + " " + Double.parseDouble(lontitudes.get(i)));
+                //tem.out.println(Double.parseDouble(latitudes.get(i)) + " " + Double.parseDouble(lontitudes.get(i)));
             }
             line.color(color);
         lines.add(line);

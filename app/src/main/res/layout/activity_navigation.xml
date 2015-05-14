@@ -35,7 +35,7 @@
         android:layout_marginTop="10dp"
         android:background="#ff3eff62"/>
 
-    <Button
+    <!--<Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Start navigate"
@@ -43,6 +43,6 @@
         android:layout_gravity="center"
         android:layout_below="@+id/search"
         android:layout_alignLeft="@+id/search"
-        android:layout_alignStart="@+id/search" />
+        android:layout_alignStart="@+id/search" />-->
 
 </RelativeLayout>
