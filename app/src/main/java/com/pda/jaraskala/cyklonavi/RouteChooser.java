@@ -23,26 +23,26 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
-import org.apache.http.client.ClientProtocolException;
+
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.w3c.dom.Text;
+
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 
 public class RouteChooser extends ActionBarActivity implements AdapterView.OnItemClickListener {
@@ -50,7 +50,9 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
     LatLng myPostition;
     ListView listView;
     String[] routes;
-    private LatLng destination;
+    String[] cameraBorder;
+    ArrayList<PolylineOptions> lines = new ArrayList<PolylineOptions>();
+
     private LatLng myPosition;
     private GoogleMap mMap;
     private Marker myMark=null;
@@ -60,7 +62,7 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_route_chooser);
         listView=(ListView)findViewById(R.id.listViewRoute);
-
+        listView.setOnItemClickListener(this);
 
 
         Bundle extras = getIntent().getExtras();
@@ -80,9 +82,13 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
 
 
         String[] input = new String[4];
+
         try {
             input = readRouts();
-            routes=input;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        routes=input;
             String parsed[] = parseInput(input);
 
 
@@ -93,6 +99,7 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
 
             Resources res = getResources();
             String[] titles = res.getStringArray(R.array.typeRouteTitles);
+            int[] colors={Color.argb(255, 102, 0, 204),Color.argb(255,0,255,0),Color.argb(255,255,0,0),Color.argb(255,0,0,0)};
             for(int i=0;i<parsed.length;i++){
                 int k=0;
                 float[] routeDescription = new float[4];
@@ -103,26 +110,26 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
                     k++;
                     }
                 }
-                arrayList.add(new SingleRow(titles[i],routeDescription[0]/1000+" km, "+routeDescription[1]/100 +" min, ascent: "+routeDescription[2]+" m"));
+                arrayList.add(new SingleRow(titles[i],routeDescription[0]/1000+" km, "+routeDescription[1]/100 +" min, ascent: "+routeDescription[2]+" m",colors[i]));
             }
 
 
 
-
             listView.setAdapter(new MyAdapter(arrayList,this));
-            listView.setOnItemClickListener(this);
 
 
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
+
+
+
 
 
 
         setUpMapIfNeeded();
         mMap.setMyLocationEnabled(true);
         mMap.getUiSettings().setRotateGesturesEnabled(false);
+        mMap.getUiSettings().setAllGesturesEnabled(false);
 
         BitmapDescriptor icon= BitmapDescriptorFactory.fromResource(R.drawable.marker);
         myMark=mMap.addMarker(new MarkerOptions().position(myPosition).title("position").icon(icon));
@@ -167,6 +174,7 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
             BufferedReader reader = new BufferedReader(new InputStreamReader(content));
 
             String[] output = new String[4];
+                    cameraBorder=new String[4];
             int number=0;
             String line;
             while ((line = reader.readLine()) != null) {
@@ -177,6 +185,9 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
                     builder = new StringBuilder();
                     number++;
                 }
+
+
+
             }
 
 
@@ -233,6 +244,66 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
                     }
                     output[i]+=" ";
                 }
+
+               /* if(input[i].charAt(j)=='"'&&input[i].charAt(j+1)=='l'&&input[i].charAt(j+2)=='e'&&input[i].charAt(j+3)=='f'){
+                    int k=0;
+                    j=j+11;
+                    while(input[i].charAt(j)!=','){
+                        cameraBorder[i]+=input[i].charAt(j);
+                        k++;
+                        j++;
+                        if(k==1){
+                            cameraBorder[i]+=".";
+                        }
+                    }
+                    cameraBorder[i]+=" ";
+
+                }
+                if(input[i].charAt(j)=='"'&&input[i].charAt(j+1)=='t'&&input[i].charAt(j+2)=='o'&&input[i].charAt(j+3)=='p'){
+                    j=j+10;
+                    int k=0;
+                    while(input[i].charAt(j)!=','){
+                        cameraBorder[i]+=input[i].charAt(j);
+
+                        k++;
+                        j++;
+                        if(k==1){
+                            cameraBorder[i]+=".";
+                        }
+                    }
+                    cameraBorder[i]+=" ";
+
+                }
+                if(input[i].charAt(j)=='"'&&input[i].charAt(j+1)=='r'&&input[i].charAt(j+2)=='i'&&input[i].charAt(j+3)=='g'){
+                    j=j+12;
+                    int k=0;
+                    while(input[i].charAt(j)!=','){
+                        cameraBorder[i]+=input[i].charAt(j);
+                        k++;
+                        j++;
+                        if(k==1){
+                            cameraBorder[i]+=".";
+                        }
+                    }
+                    cameraBorder[i]+=" ";
+
+                }
+                if(input[i].charAt(j)=='"'&&input[i].charAt(j+1)=='b'&&input[i].charAt(j+2)=='o'&&input[i].charAt(j+3)=='t'){
+                    j=j+13;
+                    int k=0;
+                    while(input[i].charAt(j)!=','){
+                        cameraBorder[i]+=input[i].charAt(j);
+                        k++;
+                        j++;
+                        if(k==1){
+                            cameraBorder[i]+=".";
+                        }
+                    }
+                    cameraBorder[i]+=" ";
+
+                }*/
+
+
             }
 
         }
@@ -243,15 +314,6 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
 
 
 
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-        Intent intent;
-        intent = new Intent(getApplicationContext(), NavigationActivity.class);
-        intent.putExtra("route",routes[position]);
-        startActivity(intent);
-
-    }
 
     private void setUpMapIfNeeded() {
         // Do a null check to confirm that we have not already instantiated the map.
@@ -275,11 +337,15 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
     private void setUpMap() {
 
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                new LatLng(myPosition.latitude, myPosition.longitude), 15));
+        //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(myPosition.latitude, myPosition.longitude), 15));
+
+
+
+        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(rohy(),600,600,0));
+        //mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(rohy(),100,100,5));
 
         mMap.addPolyline(parseRout(routes[0],Color.argb(255, 102, 0, 204)));
-        mMap.addPolyline(parseRout(routes[1],Color.argb(255,0,255,0)));
+        mMap.addPolyline(parseRout(routes[1], Color.argb(255, 0, 255, 0)));
         mMap.addPolyline(parseRout(routes[2],Color.argb(255,255,0,0)));
         mMap.addPolyline(parseRout(routes[3],Color.argb(255, 0, 0, 0)));
     }
@@ -330,6 +396,7 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
                 System.out.println(Double.parseDouble(latitudes.get(i)) + " " + Double.parseDouble(lontitudes.get(i)));
             }
             line.color(color);
+        lines.add(line);
             //line.color(Color.argb(255, 102, 0, 204));
             //line.color(Color.argb(255,0,255,0));
             //line.color(Color.argb(255,255,0,0));
@@ -340,14 +407,64 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
 
     }
 
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//        Intent intent;
+//        intent = new Intent(getApplicationContext(), NavigationActivity.class);
+//        intent.putExtra("route",routes[position]);
+//        startActivity(intent);
+
+        mMap.addPolyline(lines.get(position));
+    }
+    public LatLngBounds rohy(){
+        /*String left="";
+        String top="";
+        String right="";
+        String Bottom="";
+
+        for(int k = 0;k<4;k++){
+            double[] pole = new double[4];
+            for(int i=0;i<4;i++){
+                String tmp="";
+                for(int j=i*9;j<(j+8);j++){
+                    tmp+=cameraBorder[j];
+
+                }
+                pole[i]=Double.parseDouble(tmp);
+
+            }
+
+        }*/
+
+        double myLat =myPosition.latitude;
+        double myLon = myPosition.longitude;
+        double desLat =direction.latitude;
+        double desLon =direction.longitude;
+
+
+        LatLng southWest = new LatLng(Math.min(myLat,desLat),Math.min(myLon,desLon));
+        LatLng northEast = new LatLng(Math.max(myLat,desLat),Math.max(myLon,desLon));
+
+        System.out.println(southWest.latitude);
+        System.out.println(southWest.longitude);
+        System.out.println(northEast.latitude);
+        System.out.println(northEast.longitude);
+
+        return new LatLngBounds(southWest,northEast);
+
+    }
 }
 class SingleRow{
     String title;
     String description;
+    int color;
 
-    SingleRow(String title, String description) {
+    SingleRow(String title, String description, int color) {
         this.title = title;
         this.description = description;
+        this.color=color;
+
     }
 }
 class MyAdapter extends BaseAdapter{
@@ -381,10 +498,13 @@ class MyAdapter extends BaseAdapter{
         View row = inflater.inflate(R.layout.single_row_route,parent,false);
         TextView title = (TextView) row.findViewById(R.id.textView4);
         TextView descriptions = (TextView) row.findViewById(R.id.textView5);
+        TextView icon = (TextView) row.findViewById(R.id.textView6);
 
         SingleRow temp =list.get(position);
-        title.setText(temp.title);
-        descriptions.setText(temp.description);
+        title.setText(" "+temp.title);
+        descriptions.setText(" "+temp.description);
+        icon.setBackgroundColor(temp.color);
+
 
         return row;
     }
