@@ -85,7 +85,7 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation);
-
+//vymaz();
         LayoutInflater inflater = (LayoutInflater)getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
         View popupView = inflater.inflate(R.layout.popup_layout,null);
         popupView.startAnimation(AnimationUtils.loadAnimation(this,R.anim.abc_slide_in_bottom));
@@ -653,6 +653,24 @@ output.add(new LatLng(Double.parseDouble(latitudes.get(i)), Double.parseDouble(l
 
 
         return intent;
+    }
+
+    public void vymaz (){
+
+        try {
+            FileOutputStream fos = openFileOutput("saves", Context.MODE_PRIVATE);
+
+            fos.write("".getBytes());
+
+            fos.close();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
     }
 }
 

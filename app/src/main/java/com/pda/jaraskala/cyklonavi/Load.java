@@ -98,9 +98,21 @@ LatLng destination;
 
 
             }
-            for(int i=0;i<names.size();i++){
-            list.add(new Row(names.get(i),new LatLng(Double.parseDouble(latitudes.get(i)), Double.parseDouble(longtitudes.get(i)))));
+            if(names.size()==0){
+            lv.setClickable(false);
+                lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
+                    }
+                });
+                list.add(new Row("No destination in storage",new LatLng(0,0)));
+            }else{
+             for(int i=0;i<names.size();i++){
+                 lv.setOnItemClickListener(this);
+              list.add(new Row(names.get(i),new LatLng(Double.parseDouble(latitudes.get(i)), Double.parseDouble(longtitudes.get(i)))));
+
+             }
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
