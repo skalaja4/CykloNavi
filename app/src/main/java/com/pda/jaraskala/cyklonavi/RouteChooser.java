@@ -50,8 +50,9 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
     LatLng direction;
     LatLng myPosition;
     ListView listView;
-    String[] routes;
+    Route[] routes = new Route[4];
     String[] cameraBorder;
+    Container container;
     ArrayList<PolylineOptions> lines = new ArrayList<PolylineOptions>();
 
     //private LatLng myPosition;
@@ -70,8 +71,20 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
         System.out.println("JOOO");
         if(extras !=null){
             System.out.println("ANOOO");
-            direction = (LatLng) extras.get("coordinates1");
-            myPosition = (LatLng) extras.get("coordinates2");
+           // direction = (LatLng) extras.get("coordinates1");
+           // myPosition = (LatLng) extras.get("coordinates2");
+
+            for(int i=0;i<4;i++){
+                routes[i]=new Route();
+                routes[i].points=(ArrayList<LatLng>)extras.get("route" +i+"1");
+                routes[i].length=(float)extras.get("route" +i+"2");
+                routes[i].duration=(float)extras.get("route" +i+"3");
+                routes[i].ascent=(float)extras.get("route" +i+"4");
+            }
+            container = new Container((LatLng)extras.get("coordinates2"),(LatLng)extras.get("coordinates1"),routes[0],routes[1],routes[2],routes[3]) ;
+            direction=container.getDirection();
+            myPosition=container.getMyPosition();
+
             System.out.println(direction.latitude);
             System.out.println(myPosition.latitude);
 
@@ -88,7 +101,7 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
 
 
 
-        String[] input = new String[4];
+        /*String[] input = new String[4];
 
         try {
             input = readRouts();
@@ -99,7 +112,7 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
         String parsed[] = parseInput(input);
 
 
-
+*/
 
         ArrayList<SingleRow> arrayList = new ArrayList<SingleRow>();
 
@@ -107,7 +120,7 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
         Resources res = getResources();
         String[] titles = res.getStringArray(R.array.typeRouteTitles);
         int[] colors={Color.argb(255, 102, 0, 204),Color.argb(255,0,255,0),Color.argb(255,255,0,0),Color.argb(255,0,0,0)};
-        for(int i=0;i<parsed.length;i++){
+       /* for(int i=0;i<parsed.length;i++){
             int k=0;
             float[] routeDescription = new float[4];
             for(int j=0;j<parsed[i].length();j++){
@@ -118,8 +131,13 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
                 }
             }
             arrayList.add(new SingleRow(titles[i],routeDescription[0]/1000+" km, "+(int)routeDescription[1]/100 +" min, ascent: "+routeDescription[2]+" m",colors[i]));
-        }
+        }*/
 
+
+        for(int i=0;i<4;i++){
+            arrayList.add(new SingleRow(titles[i],container.getRoutes()[i].getLength()+" km, "+(int)container.getRoutes()[i].getDuration() +" min, ascent: "+container.getRoutes()[i].getAscent()+" m",colors[i]));
+
+        }
 
 
         listView.setAdapter(new MyAdapter(arrayList,this));
@@ -160,31 +178,14 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
         //noinspection SimplifiableIfStatement
 
         if (id == R.id.action_settings_settings) {
-            Intent intent;
-            intent = new Intent(this, Settings.class);
-            intent.putExtra("intent",new Intent(this, RouteChooser.class));
-            intent.putExtra("coordinates1",direction);
-            intent.putExtra("coordinates2",myPosition);
-            startActivity(intent);
-            // navigationEnabled=!navigationEnabled;
-
-            //test query na google maps
-            //Uri gmmIntentUri = Uri.parse("geo:0,0?q=Evropska+Praha+6");
-//            Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-//            mapIntent.setPackage("com.google.android.apps.maps");
-//            startActivity(mapIntent);
-
+            startActivity(myIntent(Settings.class));
 
 
             return true;
         }
         if(id==R.id.action_settings_help){
-            Intent intent;
-            intent = new Intent(this, Help.class);
-            intent.putExtra("intent",new Intent(this, RouteChooser.class));
-            intent.putExtra("coordinates1",direction);
-            intent.putExtra("coordinates2",myPosition);
-            startActivity(intent);
+
+            startActivity(myIntent(Help.class));
             return true;
         }
 
@@ -380,10 +381,20 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
         mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(rohy(),500,500,0));
         //mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(rohy(),100,100,5));
 
-        mMap.addPolyline(parseRout(routes[0],Color.argb(255, 102, 0, 204)));
-        mMap.addPolyline(parseRout(routes[1], Color.argb(255, 0, 255, 0)));
-        mMap.addPolyline(parseRout(routes[2],Color.argb(255,255,0,0)));
-        mMap.addPolyline(parseRout(routes[3],Color.argb(255, 0, 0, 0)));
+
+        int[] colors = {Color.argb(255, 102, 0, 204), Color.argb(255, 0, 255, 0),Color.argb(255,255,0,0),Color.argb(255, 0, 0, 0)};
+        for(int j =0; j<4;j++) {
+            PolylineOptions line = new PolylineOptions();
+            for (int i = 0; i < container.getRoutes()[j].points.size(); i++) {
+
+                line.geodesic(true).add(container.getRoutes()[j].points.get(i));
+
+
+            }
+            line.color(colors[j]);
+            mMap.addPolyline(line);
+        }
+
     }
 
     public PolylineOptions parseRout(String route, int color) {
@@ -489,6 +500,23 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
 
         return new LatLngBounds(southWest,northEast);
 
+    }
+    public Intent myIntent(Class c){
+        Intent intent;
+        intent = new Intent(getApplicationContext(), c);
+
+        intent.putExtra("boolean",false);
+        intent.putExtra("coordinates2",container.getMyPosition());
+        intent.putExtra("coordinates1",container.getDirection());
+        intent.putExtra("intent",new Intent(this, RouteChooser.class));
+        for (int i = 0; i<4;i++){
+            intent.putExtra("route" +i+"1", container.getRoutes()[i].getPoints());
+            intent.putExtra("route" +i+"2", container.getRoutes()[i].getLength());
+            intent.putExtra("route" +i+"3", container.getRoutes()[i].getDuration());
+            intent.putExtra("route" +i+"4", container.getRoutes()[i].getAscent());
+
+        }
+        return intent;
     }
 }
 class SingleRow{

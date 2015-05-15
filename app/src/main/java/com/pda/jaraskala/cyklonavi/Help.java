@@ -10,11 +10,15 @@ import android.view.MenuItem;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.ArrayList;
+
 
 public class Help extends ActionBarActivity {
 
-    LatLng directions;
+    LatLng direction;
     LatLng myPosition;
+    Container container;
+    Route[] routes = new Route[4];
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,8 +27,18 @@ public class Help extends ActionBarActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         Bundle extras = getIntent().getExtras();
-        directions= (LatLng)extras.get("coordinates1");
-        myPosition= (LatLng)extras.get("coordinates2");
+        if(!(boolean)extras.get("boolean")) {
+        for(int i=0;i<4;i++){
+            routes[i]=new Route();
+            routes[i].points=(ArrayList<LatLng>)extras.get("route" +i+"1");
+            routes[i].length=(float)extras.get("route" +i+"2");
+            routes[i].duration=(float)extras.get("route" +i+"3");
+            routes[i].ascent=(float)extras.get("route" +i+"4");
+        }
+        container = new Container((LatLng)extras.get("coordinates2"),(LatLng)extras.get("coordinates1"),routes[0],routes[1],routes[2],routes[3]) ;
+        direction=container.getDirection();
+        myPosition=container.getMyPosition();
+    }
     }
 
 
@@ -50,14 +64,27 @@ public class Help extends ActionBarActivity {
 
             Bundle extras = getIntent().getExtras();
             if(extras !=null){
+                if(!(boolean)extras.get("boolean")) {
 
                 Intent intent = (Intent) extras.get("intent");
-                intent.putExtra("coordinates1",directions);
-                intent.putExtra("coordinates2",myPosition);
+                intent.putExtra("coordinates2",container.getMyPosition());
+                intent.putExtra("coordinates1",container.getDirection());
+
+                for (int i = 0; i<4;i++){
+                    intent.putExtra("route" +i+"1", container.getRoutes()[i].getPoints());
+                    intent.putExtra("route" +i+"2", container.getRoutes()[i].getLength());
+                    intent.putExtra("route" +i+"3", container.getRoutes()[i].getDuration());
+                    intent.putExtra("route" +i+"4", container.getRoutes()[i].getAscent());
+
+                }
 
                 NavUtils.navigateUpTo(this, intent);
 
 
+            }else{
+                    Intent intent = (Intent) extras.get("intent");
+                    NavUtils.navigateUpTo(this, intent);
+                }
             }
             return true;
         }

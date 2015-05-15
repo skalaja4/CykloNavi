@@ -14,6 +14,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.StrictMode;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
@@ -47,13 +48,23 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+
+import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 public class NavigationActivity extends ActionBarActivity implements OnMapReadyCallback, GoogleMap.OnMapLongClickListener, GoogleMap.OnMapClickListener{
 
@@ -66,6 +77,7 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
     private LatLng myPosition;
     private PopupWindow popupWindow;
     private String route="";
+    private Container container;
 
 
     boolean isRout = false;
@@ -81,7 +93,9 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
 
 
 
-
+        StrictMode.ThreadPolicy policy = new StrictMode.
+                ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
 
 
 
@@ -209,12 +223,7 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
      */
     private void setUpMap() {
 
-        Bundle extras = getIntent().getExtras();
-        if(extras !=null){
 
-            route= (String) extras.get("route");
-
-        }
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                 new LatLng(myPosition.latitude, myPosition.longitude), 15));
@@ -279,12 +288,10 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
+
         if (id == R.id.action_settings_settings) {
-            Intent intent;
-            intent = new Intent(this, Settings.class);
-            intent.putExtra("intent",new Intent(this, NavigationActivity.class));
-            startActivity(intent);
+
+            startActivity(myIntent2(Settings.class));
          // navigationEnabled=!navigationEnabled;
 
             //test query na google maps
@@ -298,10 +305,8 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
             return true;
         }
         if(id==R.id.action_settings_help){
-            Intent intent;
-            intent = new Intent(this, Help.class);
-            intent.putExtra("intent",new Intent(this, NavigationActivity.class));
-            startActivity(intent);
+
+            startActivity(myIntent2(Help.class));
             return true;
         }
 
@@ -421,12 +426,41 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
             @Override
             public void onClick(View v) {
                 popupWindow.dismiss();
-                Intent intent;
-                intent = new Intent(getApplicationContext(), RouteChooser.class);
-                intent.putExtra("coordinates2",myPosition);
-                intent.putExtra("coordinates1",destination);
 
-                startActivity(intent);
+
+                String[] routes = new String[4];
+                try {
+                    routes = readRouts();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                String[] parsed = parseInput(routes);
+
+                Route[] route1234 = new Route[4];
+                for(int i=0;i<parsed.length;i++){
+                    int k=0;
+                    float[] routeDescription = new float[4];
+                    for(int j=0;j<parsed[i].length();j++){
+                        if(parsed[i].charAt(j)!=' '){
+                            routeDescription[k]=(routeDescription[k]*10 +(parsed[i].charAt(j)-48));
+                        }else{
+                            k++;
+                        }
+                    }
+                route1234[i]=new Route(routeDescription[0]/1000,routeDescription[1]/100,routeDescription[2]);
+
+                }
+
+                route1234[0].setPoints(parseRoutes(routes[0]));
+                route1234[1].setPoints(parseRoutes(routes[1]));
+                route1234[2].setPoints(parseRoutes(routes[2]));
+                route1234[3].setPoints(parseRoutes(routes[3]));
+
+                container= new Container(myPosition,destination,route1234[0],route1234[1],route1234[2],route1234[3]);
+
+
+
+                startActivity(myIntent(RouteChooser.class));
 
 
 
@@ -560,6 +594,172 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
         }
 
 
+    }
+
+    public String[] readRouts() throws IOException {
+        StringBuilder builder = new StringBuilder();
+        HttpClient client = new DefaultHttpClient();
+        HttpGet httpGet = new HttpGet("http://its.felk.cvut.cz/cycle-planner-1.1.3-SNAPSHOT-junctions/bicycleJourneyPlanning/planJourneys?startLon="+myPosition.longitude+"&startLat="+myPosition.latitude+"&endLon="+destination.longitude+"&endLat="+destination.latitude+"&avgSpeed=20");
+
+        HttpResponse response = client.execute(httpGet);
+        HttpEntity entity = response.getEntity();
+        InputStream content = entity.getContent();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(content));
+
+        String[] output = new String[4];
+        //cameraBorder=new String[4];
+        int number=0;
+        String line;
+        while ((line = reader.readLine()) != null) {
+            if(line.length()>4){
+                if(line.charAt(4)=='t'&&line.charAt(5)=='a'){
+
+                    output[number]=builder.toString();
+                    builder = new StringBuilder();
+                    number++;
+                }
+
+
+
+            }
+
+
+            builder.append(line);
+
+
+        }
+        return output;
+
+
+    }
+    public String[] parseInput(String[] input){
+        String[] output= new String[4];
+        for(int i = 0;i<input.length;i++){
+            output[i]="";
+            for(int j=0;j<input[i].length();j++){
+                if(input[i].charAt(j)=='l'&&input[i].charAt(j+1)=='e'&&input[i].charAt(j+2)=='n'&&input[i].charAt(j+3)=='g'){
+                    j=j+10;
+                    while(input[i].charAt(j)!=','){
+                        output[i]+=input[i].charAt(j);
+
+                        j++;
+                    }
+                    output[i]+=" ";
+                }
+
+                if(input[i].charAt(j)=='d'&&input[i].charAt(j+1)=='u'&&input[i].charAt(j+2)=='r'&&input[i].charAt(j+3)=='a'){
+                    j=j+12;
+                    while(input[i].charAt(j)!=','){
+                        output[i]+=input[i].charAt(j);
+
+                        j++;
+                    }
+                    output[i]+=" ";
+                }
+
+                if(input[i].charAt(j)=='G'&&input[i].charAt(j+1)=='a'&&input[i].charAt(j+2)=='i'&&input[i].charAt(j+3)=='n'){
+                    j=j+8;
+                    while(input[i].charAt(j)!=','){
+                        output[i]+=input[i].charAt(j);
+
+                        j++;
+                    }
+                    output[i]+=" ";
+                }
+
+                if(input[i].charAt(j)=='D'&&input[i].charAt(j+1)=='r'&&input[i].charAt(j+2)=='o'&&input[i].charAt(j+3)=='p'){
+                    j=j+8;
+                    while(input[i].charAt(j)!=','){
+                        output[i]+=input[i].charAt(j);
+
+                        j++;
+                    }
+                    output[i]+=" ";
+                }
+
+
+            }
+
+        }
+
+        return output;
+    }
+public ArrayList<LatLng> parseRoutes(String route){
+    ArrayList<String> latitudes = new ArrayList<String>();
+    ArrayList<String> lontitudes = new ArrayList<String>();
+    ArrayList<LatLng> output = new ArrayList<LatLng>();
+
+
+
+    for (int i = 0; i < route.length(); i++) {
+        if (route.charAt(i) == 'l' && route.charAt(i + 1) == 'e' && route.charAt(i + 2) == 'n') {
+            break;
+        }
+        String latitude = "";
+        String lontitude = "";
+        if (route.charAt(i) == 'l' && route.charAt(i + 1) == 'a' && route.charAt(i + 2) == 't') {
+            i = i + 8;
+            for (int j = 0; j < 8; j++) {
+                if (j == 2) {
+                    latitude += ".";
+                }
+                i++;
+                latitude += route.charAt(i);
+
+            }
+            latitudes.add(latitude);
+        }
+        if (route.charAt(i) == 'l' && route.charAt(i + 1) == 'o' && route.charAt(i + 2) == 'n') {
+            i = i + 8;
+            for (int j = 0; j < 8; j++) {
+                if (j == 2) {
+                    lontitude += ".";
+                }
+                i++;
+                lontitude += route.charAt(i);
+
+            }
+            lontitudes.add(lontitude);
+        }
+
+    }
+    PolylineOptions line = new PolylineOptions();
+    for (int i = 0; i < latitudes.size(); i++) {
+output.add(new LatLng(Double.parseDouble(latitudes.get(i)), Double.parseDouble(lontitudes.get(i))));
+
+    }
+    return output;
+}
+
+    public Intent myIntent(Class c){
+        Intent intent;
+        intent = new Intent(getApplicationContext(), c);
+        intent.putExtra("boolean",false);
+        intent.putExtra("intent",new Intent(this, NavigationActivity.class));
+        intent.putExtra("coordinates2",container.getMyPosition());
+        intent.putExtra("coordinates1",container.getDirection());
+
+        for (int i = 0; i<4;i++){
+            intent.putExtra("route" +i+"1", container.getRoutes()[i].getPoints());
+            intent.putExtra("route" +i+"2", container.getRoutes()[i].getLength());
+            intent.putExtra("route" +i+"3", container.getRoutes()[i].getDuration());
+            intent.putExtra("route" +i+"4", container.getRoutes()[i].getAscent());
+
+        }
+        return intent;
+    }
+    public Intent myIntent2(Class c){
+        Intent intent;
+        intent = new Intent(getApplicationContext(), c);
+
+
+
+
+        intent.putExtra("intent",new Intent(this, NavigationActivity.class));
+        intent.putExtra("boolean",true);
+
+
+        return intent;
     }
 }
 
