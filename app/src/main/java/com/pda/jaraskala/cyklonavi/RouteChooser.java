@@ -120,18 +120,7 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
         Resources res = getResources();
         String[] titles = res.getStringArray(R.array.typeRouteTitles);
         int[] colors={Color.argb(255, 102, 0, 204),Color.argb(255,0,255,0),Color.argb(255,255,0,0),Color.argb(255,0,0,0)};
-       /* for(int i=0;i<parsed.length;i++){
-            int k=0;
-            float[] routeDescription = new float[4];
-            for(int j=0;j<parsed[i].length();j++){
-                if(parsed[i].charAt(j)!=' '){
-                    routeDescription[k]=(routeDescription[k]*10 +(parsed[i].charAt(j)-48));
-                }else{
-                    k++;
-                }
-            }
-            arrayList.add(new SingleRow(titles[i],routeDescription[0]/1000+" km, "+(int)routeDescription[1]/100 +" min, ascent: "+routeDescription[2]+" m",colors[i]));
-        }*/
+
 
 
         for(int i=0;i<4;i++){
@@ -200,155 +189,6 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
         return super.onOptionsItemSelected(item);
     }
 
-    public String[] readRouts() throws IOException {
-        StringBuilder builder = new StringBuilder();
-        HttpClient client = new DefaultHttpClient();
-        HttpGet httpGet = new HttpGet("http://its.felk.cvut.cz/cycle-planner-1.1.3-SNAPSHOT-junctions/bicycleJourneyPlanning/planJourneys?startLon="+myPosition.longitude+"&startLat="+myPosition.latitude+"&endLon="+direction.longitude+"&endLat="+direction.latitude+"&avgSpeed=20");
-
-            HttpResponse response = client.execute(httpGet);
-            HttpEntity entity = response.getEntity();
-            InputStream content = entity.getContent();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(content));
-
-            String[] output = new String[4];
-                    cameraBorder=new String[4];
-            int number=0;
-            String line;
-            while ((line = reader.readLine()) != null) {
-            if(line.length()>4){
-                if(line.charAt(4)=='t'&&line.charAt(5)=='a'){
-
-                    output[number]=builder.toString();
-                    builder = new StringBuilder();
-                    number++;
-                }
-
-
-
-            }
-
-
-                builder.append(line);
-
-
-            }
-        return output;
-
-
-    }
-
-    public String[] parseInput(String[] input){
-        String[] output= new String[4];
-        for(int i = 0;i<input.length;i++){
-            output[i]="";
-            for(int j=0;j<input[i].length();j++){
-                if(input[i].charAt(j)=='l'&&input[i].charAt(j+1)=='e'&&input[i].charAt(j+2)=='n'&&input[i].charAt(j+3)=='g'){
-                j=j+10;
-                    while(input[i].charAt(j)!=','){
-                        output[i]+=input[i].charAt(j);
-
-                        j++;
-                    }
-                    output[i]+=" ";
-                }
-
-                if(input[i].charAt(j)=='d'&&input[i].charAt(j+1)=='u'&&input[i].charAt(j+2)=='r'&&input[i].charAt(j+3)=='a'){
-                    j=j+12;
-                    while(input[i].charAt(j)!=','){
-                        output[i]+=input[i].charAt(j);
-
-                        j++;
-                    }
-                    output[i]+=" ";
-                }
-
-                if(input[i].charAt(j)=='G'&&input[i].charAt(j+1)=='a'&&input[i].charAt(j+2)=='i'&&input[i].charAt(j+3)=='n'){
-                    j=j+8;
-                    while(input[i].charAt(j)!=','){
-                        output[i]+=input[i].charAt(j);
-
-                        j++;
-                    }
-                    output[i]+=" ";
-                }
-
-                if(input[i].charAt(j)=='D'&&input[i].charAt(j+1)=='r'&&input[i].charAt(j+2)=='o'&&input[i].charAt(j+3)=='p'){
-                    j=j+8;
-                    while(input[i].charAt(j)!=','){
-                        output[i]+=input[i].charAt(j);
-
-                        j++;
-                    }
-                    output[i]+=" ";
-                }
-
-               /* if(input[i].charAt(j)=='"'&&input[i].charAt(j+1)=='l'&&input[i].charAt(j+2)=='e'&&input[i].charAt(j+3)=='f'){
-                    int k=0;
-                    j=j+11;
-                    while(input[i].charAt(j)!=','){
-                        cameraBorder[i]+=input[i].charAt(j);
-                        k++;
-                        j++;
-                        if(k==1){
-                            cameraBorder[i]+=".";
-                        }
-                    }
-                    cameraBorder[i]+=" ";
-
-                }
-                if(input[i].charAt(j)=='"'&&input[i].charAt(j+1)=='t'&&input[i].charAt(j+2)=='o'&&input[i].charAt(j+3)=='p'){
-                    j=j+10;
-                    int k=0;
-                    while(input[i].charAt(j)!=','){
-                        cameraBorder[i]+=input[i].charAt(j);
-
-                        k++;
-                        j++;
-                        if(k==1){
-                            cameraBorder[i]+=".";
-                        }
-                    }
-                    cameraBorder[i]+=" ";
-
-                }
-                if(input[i].charAt(j)=='"'&&input[i].charAt(j+1)=='r'&&input[i].charAt(j+2)=='i'&&input[i].charAt(j+3)=='g'){
-                    j=j+12;
-                    int k=0;
-                    while(input[i].charAt(j)!=','){
-                        cameraBorder[i]+=input[i].charAt(j);
-                        k++;
-                        j++;
-                        if(k==1){
-                            cameraBorder[i]+=".";
-                        }
-                    }
-                    cameraBorder[i]+=" ";
-
-                }
-                if(input[i].charAt(j)=='"'&&input[i].charAt(j+1)=='b'&&input[i].charAt(j+2)=='o'&&input[i].charAt(j+3)=='t'){
-                    j=j+13;
-                    int k=0;
-                    while(input[i].charAt(j)!=','){
-                        cameraBorder[i]+=input[i].charAt(j);
-                        k++;
-                        j++;
-                        if(k==1){
-                            cameraBorder[i]+=".";
-                        }
-                    }
-                    cameraBorder[i]+=" ";
-
-                }*/
-
-
-            }
-
-        }
-
-        return output;
-    }
-
-
 
 
 
@@ -392,65 +232,9 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
 
             }
             line.color(colors[j]);
+            lines.add(line);
             mMap.addPolyline(line);
         }
-
-    }
-
-    public PolylineOptions parseRout(String route, int color) {
-
-        ArrayList<String> latitudes = new ArrayList<String>();
-        ArrayList<String> lontitudes = new ArrayList<String>();
-
-
-
-            for (int i = 0; i < route.length(); i++) {
-                if (route.charAt(i) == 'l' && route.charAt(i + 1) == 'e' && route.charAt(i + 2) == 'n') {
-                    break;
-                }
-                String latitude = "";
-                String lontitude = "";
-                if (route.charAt(i) == 'l' && route.charAt(i + 1) == 'a' && route.charAt(i + 2) == 't') {
-                    i = i + 8;
-                    for (int j = 0; j < 8; j++) {
-                        if (j == 2) {
-                            latitude += ".";
-                        }
-                        i++;
-                        latitude += route.charAt(i);
-
-                    }
-                    latitudes.add(latitude);
-                }
-                if (route.charAt(i) == 'l' && route.charAt(i + 1) == 'o' && route.charAt(i + 2) == 'n') {
-                    i = i + 8;
-                    for (int j = 0; j < 8; j++) {
-                        if (j == 2) {
-                            lontitude += ".";
-                        }
-                        i++;
-                        lontitude += route.charAt(i);
-
-                    }
-                    lontitudes.add(lontitude);
-                }
-
-            }
-            PolylineOptions line = new PolylineOptions();
-            for (int i = 0; i < latitudes.size(); i++) {
-
-                line.geodesic(true).add(new LatLng(Double.parseDouble(latitudes.get(i)), Double.parseDouble(lontitudes.get(i))));
-                //tem.out.println(Double.parseDouble(latitudes.get(i)) + " " + Double.parseDouble(lontitudes.get(i)));
-            }
-            line.color(color);
-        lines.add(line);
-            //line.color(Color.argb(255, 102, 0, 204));
-            //line.color(Color.argb(255,0,255,0));
-            //line.color(Color.argb(255,255,0,0));
-            //line.color(Color.argb(255,0,0,0));
-            //mMap.addPolyline(line);
-        return line;
-
 
     }
 
@@ -462,6 +246,10 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
 //        intent.putExtra("route",routes[position]);
 //        startActivity(intent);
 
+        mMap.clear();
+        for(int i=0; i<4;i++){
+        mMap.addPolyline(lines.get(i));
+        }
         mMap.addPolyline(lines.get(position));
     }
     public LatLngBounds rohy(){
