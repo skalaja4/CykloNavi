@@ -119,6 +119,9 @@ LatLng destination;
         } catch (IOException e) {
             e.printStackTrace();
         }
+        if(list.isEmpty()){
+            list.add(new Row("No destination in storage",new LatLng(0,0)));
+        }
 
 
 

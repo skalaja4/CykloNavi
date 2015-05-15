@@ -79,7 +79,7 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
     @Override
     protected void onResume() {
         super.onResume();
-        setContentView(R.layout.activity_route_chooser);
+        //setContentView(R.layout.activity_route_chooser);
         listView=(ListView)findViewById(R.id.listViewRoute);
         listView.setOnItemClickListener(this);
 
@@ -159,6 +159,7 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_route_chooser);
 
        // BitmapDescriptor icon= BitmapDescriptorFactory.fromResource(R.drawable.marker);
         //myMark=mMap.addMarker(new MarkerOptions().position(myPosition).title("position").icon(icon));
@@ -207,10 +208,11 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
                 saveButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        StringBuffer buffer = new StringBuffer();
                         try {
                             FileInputStream fin = openFileInput("saves");
                             int read=-1;
-                            StringBuffer buffer = new StringBuffer();
+
                             while((read=fin.read())!=-1){
                                 buffer.append((char)read);
                             }
@@ -218,7 +220,12 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
 
                             fin.close();
                             System.out.println(buffer);
-
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        try{
                             FileOutputStream fos = openFileOutput("saves", Context.MODE_PRIVATE);
                             String latitude = direction.latitude+" ";
                             String lontitude = direction.longitude+" ";
@@ -291,7 +298,7 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
         // Do a null check to confirm that we have not already instantiated the map.
         if (mMap == null) {
             // Try to obtain the map from the SupportMapFragment.
-            mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
+            mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map2))
                     .getMap();
             // Check if we were successful in obtaining the map.
             if (mMap != null) {
