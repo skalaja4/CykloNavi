@@ -231,49 +231,15 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
         mMap.setOnMapClickListener(this);
 
 
-        /*mMap.addPolyline(new PolylineOptions().geodesic(true)
-                .add(new LatLng(50.074, 14.448))
-                .add(new LatLng(50.077, 14.448))
-                .add(new LatLng(50.078, 14.448))
-                .add(new LatLng(50.080, 14.447))
-                .add(new LatLng(50.081, 14.445))
-                .add(new LatLng(50.081, 14.444))
-                .add(new LatLng(50.083, 14.443))
-                .add(new LatLng(50.084399, 14.441216))
-                .add(new LatLng(50.085036, 14.441114))
-                .add(new LatLng(50.085136, 14.440709))
-                .add(new LatLng(50.086174, 14.437802))
-                .add(new LatLng(50.086489, 14.436973))
-                .add(new LatLng(50.087264, 14.435220))
-                .add(new LatLng(50.087269, 14.432607))
-                .add(new LatLng(50.089678, 14.432412))
-                .add(new LatLng(50.091074, 14.431888))
-                .add(new LatLng(50.091528, 14.431781))
-                .add(new LatLng(50.090704, 14.427769))
-                .add(new LatLng(50.090677, 14.426057))
-                .add(new LatLng(50.089510, 14.422672))
-                .add(new LatLng(50.089290, 14.422796))
-                .add(new LatLng(50.089331, 14.42379))
-        );*/
-        //parseRout();
+
 
     }
 
 
     @Override
     public void onMapReady(GoogleMap map) {
-//        map.moveCamera(CameraUpdateFactory.newLatLngZoom(
-//                new LatLng(-18.142, 178.431), 2));
-//
-//        // Polylines are useful for marking paths and routes on the map.
-//        map.addPolyline(new PolylineOptions().geodesic(true)
-//                .add(new LatLng(-33.866, 151.195))  // Sydney
-//                .add(new LatLng(-18.142, 178.431))  // Fiji
-//                .add(new LatLng(21.291, -157.821))  // Hawaii
-//                .add(new LatLng(37.423, -122.091))  // Mountain View
-//        );
-    }
 
+    }
     @Override
     protected void onStop() {
         super.onStop();
@@ -309,6 +275,11 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
             startActivity(myIntent2(Help.class));
             return true;
         }
+        if(id==R.id.action_load){
+
+            startActivity(myIntent2(Load.class));
+            return true;
+        }
 
 
 
@@ -327,84 +298,6 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
         return true;
     }
 
-    public void itIsLast(){
-        String FILENAME = "cykloNaviSettings";
-
-        byte[] bytes =new byte[255];
-        try {
-            FileInputStream fis = openFileInput(FILENAME);
-            fis.read(bytes);
-            String input = new String(bytes);
-            String output="";
-            for(int i=1; i<input.length();i++){
-                output+=input.charAt(i);
-
-                if(input.charAt(i-1)=='3'){
-                    output+="4google";
-                    break;
-                }
-
-
-            }
-
-            FileOutputStream fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
-            fos.write(output.getBytes());
-            fos.close();
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    public void openLastOne()  {
-        String FILENAME = "cykloNaviSettings";
-
-        byte[] bytes =new byte[255];
-        FileInputStream fis = null;
-        try {
-            fis = openFileInput(FILENAME);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        try {
-            fis.read(bytes);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        String input = new String(bytes);
-
-        for(int i=0; i<input.length();i++){
-
-            if(input.charAt(i)=='4'){
-
-                if(input.charAt(i+1)=='m'){
-                    Intent intent;
-                    intent = new Intent(this, MenuTab.class);
-                    startActivity(intent);
-                    break;
-                }
-
-                if(input.charAt(i+1)=='g'){
-                    Intent intent;
-                    intent = new Intent(this, NavigationActivity.class);
-                    startActivity(intent);
-                    break;
-                }
-
-                if(input.charAt(i+1)=='n'){
-
-                    break;
-                }
-
-
-
-            }
-
-
-        }
-
-    }
 
 
 
@@ -754,7 +647,7 @@ output.add(new LatLng(Double.parseDouble(latitudes.get(i)), Double.parseDouble(l
 
 
 
-
+        intent.putExtra("coordinates2",myPosition);
         intent.putExtra("intent",new Intent(this, NavigationActivity.class));
         intent.putExtra("boolean",true);
 

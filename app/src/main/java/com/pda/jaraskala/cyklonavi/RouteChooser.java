@@ -1,13 +1,20 @@
 package com.pda.jaraskala.cyklonavi;
 
+import android.app.ActionBar;
+import android.app.DialogFragment;
+import android.app.FragmentManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.StrictMode;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,8 +22,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -38,15 +49,19 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 
-public class RouteChooser extends ActionBarActivity implements AdapterView.OnItemClickListener {
+public class RouteChooser extends ActionBarActivity implements AdapterView.OnItemClickListener, DialogInterface.OnClickListener{
     LatLng direction;
     LatLng myPosition;
     ListView listView;
@@ -54,8 +69,10 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
     String[] cameraBorder;
     Container container;
     ArrayList<PolylineOptions> lines = new ArrayList<PolylineOptions>();
-
+    PopupWindow popupWindow;
+    Button saveButton;
     //private LatLng myPosition;
+    EditText et;
     private GoogleMap mMap;
     private Marker myMark=null;
 
@@ -166,6 +183,84 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
 
         //noinspection SimplifiableIfStatement
 
+        if(id==R.id.action_save){
+
+            LayoutInflater inflater = (LayoutInflater)getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+            View popupView = inflater.inflate(R.layout.popup_save,null);
+            popupWindow = new PopupWindow(popupView, ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT);
+
+            Geocoder gCoder = new Geocoder(this);
+            try {
+                List<Address> addresses = gCoder.getFromLocation(direction.latitude,direction.longitude,1);
+               // LayoutInflater inflater = (LayoutInflater)this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                //final View view=inflater.inflate(R.layout.popup_save,null);
+                TextView tv = (TextView) popupView.findViewById(R.id.textView7);
+                et = (EditText) popupView.findViewById(R.id.editText);
+                if(addresses!= null && addresses.size()>0){
+
+                    tv.setText(addresses.get(0).getThoroughfare()+" "+addresses.get(0).getFeatureName());
+                }
+                popupWindow.showAtLocation(popupWindow.getContentView(), Gravity.CENTER,0,0);
+                saveButton = (Button)popupView.findViewById(R.id.save);
+                popupWindow.setFocusable(true);
+                popupWindow.update();
+                saveButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        try {
+                            FileInputStream fin = openFileInput("saves");
+                            int read=-1;
+                            StringBuffer buffer = new StringBuffer();
+                            while((read=fin.read())!=-1){
+                                buffer.append((char)read);
+                            }
+
+
+                            fin.close();
+                            System.out.println(buffer);
+
+                            FileOutputStream fos = openFileOutput("saves", Context.MODE_PRIVATE);
+                            String latitude = direction.latitude+" ";
+                            String lontitude = direction.longitude+" ";
+                            String name = et.getText().toString()+" ";
+                            String list = buffer.toString();
+                            fos.write(list.getBytes());
+                            fos.write(latitude.getBytes());
+                            fos.write(lontitude.getBytes());
+                            fos.write(name.getBytes());
+
+                            fos.close();
+
+
+
+
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        popupWindow.dismiss();
+                    }
+                });
+
+               Button cancel= (Button)popupView.findViewById(R.id.cancel);
+                cancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        popupWindow.dismiss();
+                    }
+                });
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+
+            return true;
+        }
+
         if (id == R.id.action_settings_settings) {
             startActivity(myIntent(Settings.class));
 
@@ -241,10 +336,7 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//        Intent intent;
-//        intent = new Intent(getApplicationContext(), NavigationActivity.class);
-//        intent.putExtra("route",routes[position]);
-//        startActivity(intent);
+
 
         mMap.clear();
         for(int i=0; i<4;i++){
@@ -253,24 +345,6 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
         mMap.addPolyline(lines.get(position));
     }
     public LatLngBounds rohy(){
-        /*String left="";
-        String top="";
-        String right="";
-        String Bottom="";
-
-        for(int k = 0;k<4;k++){
-            double[] pole = new double[4];
-            for(int i=0;i<4;i++){
-                String tmp="";
-                for(int j=i*9;j<(j+8);j++){
-                    tmp+=cameraBorder[j];
-
-                }
-                pole[i]=Double.parseDouble(tmp);
-
-            }
-
-        }*/
 
         double myLat =myPosition.latitude;
         double myLon = myPosition.longitude;
@@ -306,6 +380,23 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
         }
         return intent;
     }
+
+    @Override
+    public void onClick(DialogInterface dialog, int which) {
+        popupWindow.dismiss();
+    }
+
+    public void showDialog(){
+        FragmentManager manager = getFragmentManager();
+        SaveDialog dialog=new SaveDialog();
+        dialog.show(manager,"SaveDialog");
+    }
+
+
+
+
+
+
 }
 class SingleRow{
     String title;

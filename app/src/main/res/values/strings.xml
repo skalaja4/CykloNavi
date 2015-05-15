@@ -57,5 +57,6 @@
     <drawable name="darkgrey">#606060</drawable>
     <string name="title_activity_route_chooser">RouteChooser</string>
     <string name="title_activity_rout_map">RoutMap</string>
+    <string name="title_activity_load">Load</string>
 
 </resources>

@@ -16,7 +16,7 @@
         android:icon="@drawable/action_settings"
         android:orderInCategory="100"
         app:showAsAction="always" />-->
-    <item android:id="@+id/action_settings_load"
+    <item android:id="@+id/action_load"
         android:title="Load"
         app:showAsAction="always" />
     <item android:id="@+id/action_settings_settings"

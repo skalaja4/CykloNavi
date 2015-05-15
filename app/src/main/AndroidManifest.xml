@@ -61,7 +61,13 @@
         </activity>
         <activity
             android:name=".Help"
-            android:label="@string/title_activity_help" >
+            android:label="@string/title_activity_help"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".Load"
+            android:parentActivityName=".NavigationActivity"
+            android:label="@string/title_activity_load" >
         </activity>
     </application>
 
