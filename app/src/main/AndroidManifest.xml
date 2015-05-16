@@ -66,8 +66,12 @@
         </activity>
         <activity
             android:name=".Load"
-            android:parentActivityName=".NavigationActivity"
-            android:label="@string/title_activity_load" >
+            android:label="@string/title_activity_load"
+            android:parentActivityName=".NavigationActivity" >
+        </activity>
+        <activity
+            android:name=".NavigationArrow"
+            android:label="@string/title_activity_navigation_arrow" >
         </activity>
     </application>
 

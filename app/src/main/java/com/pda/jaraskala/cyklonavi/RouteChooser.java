@@ -146,7 +146,7 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
         }
 
 
-        listView.setAdapter(new MyAdapter(arrayList,this));
+        listView.setAdapter(new MyAdapter(arrayList,this,container.getRoutes()));
 
 
         setUpMapIfNeeded();
@@ -421,10 +421,12 @@ class MyAdapter extends BaseAdapter{
 
     ArrayList<SingleRow> list;
     Context context;
+    Route[] routes;
 
-    MyAdapter(ArrayList<SingleRow> list, Context c) {
+    MyAdapter(ArrayList<SingleRow> list, Context c, Route[] routes) {
         this.list = list;
         this.context = c;
+        this.routes=routes;
     }
 
     @Override
@@ -443,12 +445,29 @@ class MyAdapter extends BaseAdapter{
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View row = inflater.inflate(R.layout.single_row_route,parent,false);
         TextView title = (TextView) row.findViewById(R.id.textView4);
         TextView descriptions = (TextView) row.findViewById(R.id.textView5);
         TextView icon = (TextView) row.findViewById(R.id.textView6);
+        Button button = (Button) row.findViewById(R.id.navigate);
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            ArrayList<LatLng> points = routes[position].points;
+
+                Intent intent;
+                intent = new Intent(context,NavigationArrow.class);
+                intent.putExtra("points",points);
+                context.startActivity(intent);
+
+
+
+            }
+        });
+
 
         SingleRow temp =list.get(position);
         title.setText(" "+temp.title);
