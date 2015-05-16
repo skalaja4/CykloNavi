@@ -1,5 +1,6 @@
 package com.pda.jaraskala.cyklonavi;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Matrix;
 import android.hardware.Sensor;
@@ -8,6 +9,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationListener;
+import android.location.LocationManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -41,6 +43,7 @@ ArrayList<LatLng> points;
     private float[] mR = new float[9];
     private float[] mOrientation = new float[3];
     private float mCurrentDegree = 0f;
+    private float difference=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,7 +59,17 @@ ArrayList<LatLng> points;
     mSensorManager =(SensorManager) getSystemService(SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mMagnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+        LocationManager manager=(LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
+      /*  Location loc2 = new Location("");
+        loc2.setLatitude(points.get(2).latitude);
+        loc2.setLongitude(points.get(2).longitude);
+        Location loc = new Location("");
+        loc.setLatitude(points.get(0).latitude);
+        loc.setLongitude(points.get(0).longitude);
+
+        difference = loc.bearingTo(loc2);
+        System.out.println(difference);*/
 
 
         LocationListener listener=new LocationListener() {
@@ -72,6 +85,13 @@ ArrayList<LatLng> points;
                 myPosition=location;
 
                 int closest = closestPoint();
+                Location loc2 = new Location("");
+                loc2.setLatitude(points.get(closest).latitude);
+                loc2.setLongitude(points.get(closest).longitude);
+                difference = myPosition.bearingTo(loc2);
+                System.out.println(difference);
+
+
 
 
 
@@ -94,6 +114,7 @@ ArrayList<LatLng> points;
 
             }
         };
+        manager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,listener);
     }
 
     @Override
@@ -160,7 +181,7 @@ ArrayList<LatLng> points;
 
            if(second>first){
                lastPassed=i;
-               return i+1;
+               return i+2;
            }
 
        }
@@ -179,11 +200,13 @@ return -1;
     @Override
     public void onSensorChanged(SensorEvent event) {
 
-        if (event.sensor == mAccelerometer) {
+       if (event.sensor == mAccelerometer) {
             System.arraycopy(event.values, 0, mLastAccelerometer, 0, event.values.length);
             mLastAccelerometerSet = true;
+            //System.out.println("TRUE1");
         } else if (event.sensor == mMagnetometer) {
             System.arraycopy(event.values, 0, mLastMagnetometer, 0, event.values.length);
+            //System.out.println("TRUE2");
             mLastMagnetometerSet = true;
         }
         if (mLastAccelerometerSet && mLastMagnetometerSet) {
@@ -191,8 +214,12 @@ return -1;
             SensorManager.getOrientation(mR, mOrientation);
             float azimuthInRadians = mOrientation[0];
             float azimuthInDegress = (float)(Math.toDegrees(azimuthInRadians)+360)%360;
+
+        //float azimuthInDegress = Math.round(event.values[0]);
+
+
             RotateAnimation ra = new RotateAnimation(
-                    mCurrentDegree,
+                    mCurrentDegree+difference,
                     -azimuthInDegress,
                     Animation.RELATIVE_TO_SELF, 0.5f,
                     Animation.RELATIVE_TO_SELF,
@@ -200,12 +227,15 @@ return -1;
 
             ra.setDuration(250);
 
+           // System.out.println("ZMENA ROTACE");
             ra.setFillAfter(true);
 
             arrow.startAnimation(ra);
             mCurrentDegree = -azimuthInDegress;
     }
     }
+
+
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
