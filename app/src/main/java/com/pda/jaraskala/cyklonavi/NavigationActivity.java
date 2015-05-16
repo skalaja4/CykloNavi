@@ -101,8 +101,10 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
 
         LocationManager manager=(LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
-        myPosition=new LatLng(50.078455,14.400039);
-        //myPosition=new LatLng(50.009829,14.632050);
+       // myPosition=new LatLng(50.078455,14.400039);
+        myPosition=new LatLng(50.009616,14.633976);
+
+
         setUpMapIfNeeded();
         mMap.setMyLocationEnabled(true);
         mMap.getUiSettings().setRotateGesturesEnabled(false);

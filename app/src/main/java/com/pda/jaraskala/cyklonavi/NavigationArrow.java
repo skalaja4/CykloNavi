@@ -2,7 +2,9 @@ package com.pda.jaraskala.cyklonavi;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.drawable.Drawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -20,7 +22,10 @@ import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.ArrayList;
 
@@ -35,6 +40,7 @@ ArrayList<LatLng> points;
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
     private Sensor mMagnetometer;
+    private SensorEventListener c;
 
     private float[] mLastAccelerometer = new float[3];
     private float[] mLastMagnetometer = new float[3];
@@ -44,22 +50,38 @@ ArrayList<LatLng> points;
     private float[] mOrientation = new float[3];
     private float mCurrentDegree = 0f;
     private float difference=0;
+    private GoogleMap mMap;
+    PolylineOptions secondLine;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation_arrow);
         lastPassed=0;
         arrow =(ImageView) findViewById(R.id.imageView);
-
+c=this;
         arrow.setOnClickListener(this);
-
+        secondLine = new PolylineOptions();
+        //secondLine.color(Color.argb(255, 0, 255, 0));
         Bundle extras = getIntent().getExtras();
         points = (ArrayList<LatLng>)extras.get("points");
+        myPosition=new Location("");
+        myPosition.setLatitude(50.009616);
+        myPosition.setLongitude(14.633976);
+
+
+        //myPosition.setLatitude(50.078455);
+        //myPosition.setLongitude(14.400039);
+
+
+
 
     mSensorManager =(SensorManager) getSystemService(SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mMagnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         LocationManager manager=(LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+
+
+
 
       /*  Location loc2 = new Location("");
         loc2.setLatitude(points.get(2).latitude);
@@ -81,18 +103,32 @@ ArrayList<LatLng> points;
                  //   mMap.animateCamera(CameraUpdateFactory.newLatLng(position));
 
                 }
-
+            if(location!=null){
                 myPosition=location;
-
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(myPosition.getLatitude(), myPosition.getLongitude()), 19));
                 int closest = closestPoint();
                 if(closest!=-1){
-                Location loc2 = new Location("");
-                loc2.setLatitude(points.get(closest).latitude);
-                loc2.setLongitude(points.get(closest).longitude);
-                difference = myPosition.bearingTo(loc2);
-                System.out.println(difference);
+                    if(closest!=-2) {
+                        Location loc2 = new Location("");
+                        loc2.setLatitude(points.get(closest).latitude);
+                        loc2.setLongitude(points.get(closest).longitude);
+                        difference = myPosition.bearingTo(loc2);
+                        System.out.println(difference);
+                      //  secondLine.geodesic(true).add(points.get(closest - 2));
+                        mMap.clear();
+                        secondLine = new PolylineOptions();
+                        for(int i =lastPassed;i<points.size();i++){
+                            secondLine.geodesic(true).add(points.get(i));
+                        }
+                        mMap.addPolyline(secondLine);
 
+                    }else{
+                        arrow.setImageResource(R.drawable.finish);
+                        mSensorManager.unregisterListener(c, mAccelerometer);
+                        mSensorManager.unregisterListener(c, mMagnetometer);
+                    }
                 }
+            }
 
 
 
@@ -118,11 +154,17 @@ ArrayList<LatLng> points;
             }
         };
         manager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,listener);
+        //myPosition=manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        setUpMapIfNeeded();
+        mMap.setMyLocationEnabled(true);
+        mMap.getUiSettings().setRotateGesturesEnabled(false);
+        mMap.getUiSettings().setAllGesturesEnabled(false);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+
         mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_GAME);
         mSensorManager.registerListener(this, mMagnetometer, SensorManager.SENSOR_DELAY_GAME);
     }
@@ -177,17 +219,27 @@ ArrayList<LatLng> points;
 
        double first =0;
        double second = 0;
-
-       for(int i=lastPassed;i<points.size();i++){
+if(lastPassed+2<points.size()){
+       for(int i=lastPassed;i<points.size()-1;i++){
             first = distance(myPosition,points.get(i));
            second = distance(myPosition,points.get(i+1));
 
            if(second>first){
                lastPassed=i;
+               if(i+2<points.size()){
                return i+2;
+               }else if(i+1<points.size()){
+                   return i+1;
+
+               }else{
+                   return -2;
+               }
            }
 
        }
+}else{
+    return -2;
+}
 
 return -1;
 
@@ -230,7 +282,7 @@ return -1;
 
             ra.setDuration(250);
 
-           // System.out.println("ZMENA ROTACE");
+            System.out.println("ZMENA ROTACE");
             ra.setFillAfter(true);
 
             arrow.startAnimation(ra);
@@ -244,4 +296,47 @@ return -1;
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
+    private void setUpMapIfNeeded() {
+        // Do a null check to confirm that we have not already instantiated the map.
+        if (mMap == null) {
+            // Try to obtain the map from the SupportMapFragment.
+            mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map3))
+                    .getMap();
+            // Check if we were successful in obtaining the map.
+            if (mMap != null) {
+                setUpMap();
+            }
+        }
+    }
+
+    /**
+     * This is where we can add markers or lines, add listeners or move the camera. In this case, we
+     * just add a marker near Africa.
+     * <p/>
+     * This should only be called once and when we are sure that {@link #mMap} is not null.
+     */
+    private void setUpMap() {
+
+        System.out.println("Pozice:" +myPosition.getLatitude());
+        System.out.println("Pozice2:" +myPosition.getLongitude());
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(myPosition.getLatitude(), myPosition.getLongitude()), 19));
+
+
+
+       // mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(rohy(),500,500,0));
+        //mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(rohy(),100,100,5));
+
+
+      //  int[] colors = {Color.argb(255, 102, 0, 204), Color.argb(255, 0, 255, 0),Color.argb(255,255,0,0),Color.argb(255, 0, 0, 0)};
+
+            PolylineOptions line = new PolylineOptions();
+            for (int i = 0; i < points.size(); i++) {
+
+                line.geodesic(true).add(points.get(i));
+
+
+        }
+        mMap.addPolyline(line);
+    }
+
 }
