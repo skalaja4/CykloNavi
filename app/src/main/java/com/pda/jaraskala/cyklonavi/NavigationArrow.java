@@ -85,11 +85,14 @@ ArrayList<LatLng> points;
                 myPosition=location;
 
                 int closest = closestPoint();
+                if(closest!=-1){
                 Location loc2 = new Location("");
                 loc2.setLatitude(points.get(closest).latitude);
                 loc2.setLongitude(points.get(closest).longitude);
                 difference = myPosition.bearingTo(loc2);
                 System.out.println(difference);
+
+                }
 
 
 
