@@ -78,7 +78,10 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if(!isOnline()){
         createNetErrorDialog();
+        }
+
         setContentView(R.layout.activity_navigation);
 //vymaz();
         LayoutInflater inflater = (LayoutInflater)getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
