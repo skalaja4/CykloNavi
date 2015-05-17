@@ -68,12 +68,15 @@
         <activity
             android:name=".Load"
             android:label="@string/title_activity_load"
-            android:parentActivityName=".NavigationActivity" >
+            android:parentActivityName=".NavigationActivity"
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name=".NavigationArrow"
-            android:parentActivityName=".NavigationActivity" >
-            android:label="@string/title_activity_navigation_arrow" >
+            android:parentActivityName=".NavigationActivity"
+            android:screenOrientation="portrait" >
+
+
         </activity>
     </application>
 

@@ -34,6 +34,9 @@ import android.widget.EditText;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -60,7 +63,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NavigationActivity extends ActionBarActivity implements OnMapReadyCallback, GoogleMap.OnMapLongClickListener, GoogleMap.OnMapClickListener{
+public class NavigationActivity extends ActionBarActivity implements OnMapReadyCallback, GoogleMap.OnMapLongClickListener, GoogleMap.OnMapClickListener, GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener{
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private boolean navigationEnabled=false;
@@ -72,6 +75,7 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
     private PopupWindow popupWindow;
     private String route="";
     private Container container;
+    GoogleApiClient mGoogleApiClient;
 
 
     boolean isRout = false;
@@ -88,8 +92,12 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
         View popupView = inflater.inflate(R.layout.popup_layout,null);
         popupView.startAnimation(AnimationUtils.loadAnimation(this,R.anim.abc_slide_in_bottom));
         popupWindow = new PopupWindow(popupView, ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT);
-
-
+        myPosition=new LatLng(50.009616,14.633976);
+         mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
 
 
         StrictMode.ThreadPolicy policy = new StrictMode.
@@ -101,7 +109,7 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
         LocationManager manager=(LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
        // myPosition=new LatLng(50.078455,14.400039);
-        myPosition=new LatLng(50.009616,14.633976);
+
 
 
         setUpMapIfNeeded();
@@ -393,7 +401,23 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
         popupWindow.dismiss();
     }
 
+    @Override
+    public void onConnected(Bundle bundle) {
+        Location loc = LocationServices.FusedLocationApi.getLastLocation(
+                mGoogleApiClient);
+        myPosition =new LatLng(loc.getLatitude(),loc.getLongitude()) ;
 
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
+    }
 
 
     private class SearchClicked extends AsyncTask<Void, Void, Boolean> {
