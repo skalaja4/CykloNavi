@@ -10,6 +10,9 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.series.DataPoint;
+import com.jjoe64.graphview.series.LineGraphSeries;
 
 import java.util.ArrayList;
 
@@ -59,10 +62,112 @@ public class TrackInfo extends ActionBarActivity {
         tvAscent.setText("Total ascent: "+container.getRoutes()[position].ascent+" m");
 
 
+        GraphView graph = (GraphView) findViewById(R.id.graph);
+
+
+        ArrayList<Integer> profile = parseProfile();
+        ArrayList<Integer> second = new ArrayList<>();
+        ArrayList<Integer> first = new ArrayList<>();
+
+        int k=0;
+        boolean isSecond=false;
+        for(Integer i:profile){
+            if(!isSecond){
+
+                if(i==-9999){
+                    isSecond=true;
+                }else{
+                first.add(i);}
+            }else{
+                second.add(i);
+            }
+
+        }
+
+
+
+        k=0;
+        DataPoint[] neco = new DataPoint[first.size()];
+
+        for(Integer i:first){
+
+                neco[k] = new DataPoint(((double)second.get(k))/1000, first.get(k));
+            k++;
+
+        }
+
+
+
+        LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(neco);
+
+        graph.getViewport().setXAxisBoundsManual(true);
+        graph.getViewport().setMaxX(((double)second.get(second.size()-1))/1000);
+        graph.getViewport().setMinX(0);
+
+        graph.addSeries(series);
+
 
 
 
     }
+    public ArrayList<Integer> parseProfile(){
+        ArrayList<Integer> output = new ArrayList<Integer>();
+
+        for(int i=0;i<routes[position].string.length();i++){
+            char c=routes[position].string.charAt(i);
+            if(routes[position].string.charAt(i)=='P'&&routes[position].string.charAt(i+1)=='r'){
+
+                int tmp=0;
+                for(int j=i+13;i<routes[position].string.length();j++) {
+                    c=routes[position].string.charAt(j);
+                    if(routes[position].string.charAt(j)==' '&&routes[position].string.charAt(j+1)==']'){
+                        i=j;
+                        output.add(-9999);
+                        break;
+                    }
+                    if(c==','){
+                        j++;
+                        output.add(tmp);
+                        tmp =0;
+
+                    }else{
+                        tmp=(tmp*10)+(c-48);
+                    }
+
+                }
+
+            }
+
+            if(routes[position].string.charAt(i)=='D'&&routes[position].string.charAt(i+1)=='i'){
+
+                int tmp=0;
+                for(int j=i+14;i<routes[position].string.length();j++) {
+                    c=routes[position].string.charAt(j);
+                    if(routes[position].string.charAt(j)==' '&&routes[position].string.charAt(j+1)==']'){
+                        i=j;
+                        break;
+                    }
+                    if(c==','){
+                        j++;
+                        output.add(tmp);
+                        tmp =0;
+
+                    }else{
+                        tmp=(tmp*10)+(c-48);
+                    }
+
+                }
+                break;
+            }
+
+        }
+
+
+        return output;
+
+    }
+
+
 
 
     @Override
