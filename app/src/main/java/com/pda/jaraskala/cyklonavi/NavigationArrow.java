@@ -1,7 +1,9 @@
 package com.pda.jaraskala.cyklonavi;
 
+import android.app.ActionBar;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.drawable.Drawable;
@@ -12,14 +14,21 @@ import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.animation.RotateAnimation;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -52,13 +61,22 @@ ArrayList<LatLng> points;
     private float difference=0;
     private GoogleMap mMap;
     PolylineOptions secondLine;
+    private boolean finished =false;
+    private PopupWindow popupWindow;
+    private int zoom =19;
+
+    LatLng direction;
+    LatLng myPosition2;
+    Container container;
+    Route[] routes = new Route[4];
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation_arrow);
         lastPassed=0;
         arrow =(ImageView) findViewById(R.id.imageView);
-c=this;
+        c=this;
+         finished =false;
         arrow.setOnClickListener(this);
         secondLine = new PolylineOptions();
         //secondLine.color(Color.argb(255, 0, 255, 0));
@@ -67,10 +85,68 @@ c=this;
         myPosition=new Location("");
         myPosition.setLatitude(50.009616);
         myPosition.setLongitude(14.633976);
-
-
         //myPosition.setLatitude(50.078455);
         //myPosition.setLongitude(14.400039);
+
+
+        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
+
+        if(extras !=null) {
+            if(!(boolean)extras.get("boolean")){
+                for (int i = 0; i < 4; i++) {
+                    routes[i] = new Route();
+                    routes[i].points = (ArrayList<LatLng>) extras.get("route" + i + "1");
+                    routes[i].length = (float) extras.get("route" + i + "2");
+                    routes[i].duration = (float) extras.get("route" + i + "3");
+                    routes[i].ascent = (float) extras.get("route" + i + "4");
+                }
+                container = new Container((LatLng) extras.get("coordinates2"), (LatLng) extras.get("coordinates1"), routes[0], routes[1], routes[2], routes[3]);
+                direction = container.getDirection();
+                myPosition2 = container.getMyPosition();
+            }
+        }
+
+        LayoutInflater inflater = (LayoutInflater)getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+        View popupView = inflater.inflate(R.layout.popup_finish,null);
+        popupView.startAnimation(AnimationUtils.loadAnimation(this, R.anim.abc_slide_in_bottom));
+        popupWindow = new PopupWindow(popupView, ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT);
+
+        Button popButton=(Button)popupWindow.getContentView().findViewById(R.id.button3);
+
+
+        Button plusButton = (Button) findViewById(R.id.plusButton);
+        Button minusButton = (Button) findViewById(R.id.minusButton);
+
+        plusButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                zoom++;
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(myPosition.getLatitude(), myPosition.getLongitude()), zoom));
+            }
+        });
+
+        minusButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                zoom--;
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(myPosition.getLatitude(), myPosition.getLongitude()), zoom));
+            }
+        });
+        popButton.setHeight(200);
+        popButton.setWidth(300);
+
+        popButton.setText("FINISH");
+        popButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent;
+                intent = new Intent(getApplicationContext(), NavigationActivity.class);
+                startActivity(intent);
+            }
+        });
+
 
 
 
@@ -103,9 +179,9 @@ c=this;
                  //   mMap.animateCamera(CameraUpdateFactory.newLatLng(position));
 
                 }
-            if(location!=null){
+
                 myPosition=location;
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(myPosition.getLatitude(), myPosition.getLongitude()), 19));
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(myPosition.getLatitude(), myPosition.getLongitude()), zoom));
                 int closest = closestPoint();
                 if(closest!=-1){
                     if(closest!=-2) {
@@ -113,7 +189,7 @@ c=this;
                         loc2.setLatitude(points.get(closest).latitude);
                         loc2.setLongitude(points.get(closest).longitude);
                         difference = myPosition.bearingTo(loc2);
-                        System.out.println(difference);
+                     //   System.out.println(difference);
                       //  secondLine.geodesic(true).add(points.get(closest - 2));
                         mMap.clear();
                         secondLine = new PolylineOptions();
@@ -123,12 +199,15 @@ c=this;
                         mMap.addPolyline(secondLine);
 
                     }else{
-                        arrow.setImageResource(R.drawable.finish);
+                      //  arrow.setImageResource(R.drawable.finish);
+                        //arrow.setRotation(0);
+                        finished=true;
+                        popupWindow.showAtLocation(popupWindow.getContentView(), Gravity.CENTER,0,0);
                         mSensorManager.unregisterListener(c, mAccelerometer);
                         mSensorManager.unregisterListener(c, mMagnetometer);
                     }
                 }
-            }
+
 
 
 
@@ -156,7 +235,7 @@ c=this;
         manager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,listener);
         //myPosition=manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         setUpMapIfNeeded();
-        mMap.setMyLocationEnabled(true);
+        //mMap.setMyLocationEnabled(true);
         mMap.getUiSettings().setRotateGesturesEnabled(false);
         mMap.getUiSettings().setAllGesturesEnabled(false);
     }
@@ -195,6 +274,39 @@ c=this;
             return true;
         }
 
+        if(id == android.R.id.home){
+
+           /* Bundle extras = getIntent().getExtras();
+            if(extras !=null){
+                if(!(boolean)extras.get("boolean")) {
+                    Intent intent = (Intent) extras.get("intent");
+                    intent.putExtra("coordinates2", container.getMyPosition());
+                    intent.putExtra("coordinates1", container.getDirection());
+
+                    for (int i = 0; i < 4; i++) {
+                        intent.putExtra("route" + i + "1", container.getRoutes()[i].getPoints());
+                        intent.putExtra("route" + i + "2", container.getRoutes()[i].getLength());
+                        intent.putExtra("route" + i + "3", container.getRoutes()[i].getDuration());
+                        intent.putExtra("route" + i + "4", container.getRoutes()[i].getAscent());
+
+                    }
+
+                    NavUtils.navigateUpTo(this, intent);
+
+                }else{
+                    Intent intent = (Intent) extras.get("intent");
+                    NavUtils.navigateUpTo(this, intent);
+                }
+                */
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+            }
+            // NavUtils.navigateUpFromSameTask(this);
+
+
+
+
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -226,8 +338,8 @@ if(lastPassed+2<points.size()){
 
            if(second>first){
                lastPassed=i;
-               if(i+2<points.size()){
-               return i+2;
+               if(i+2<points.size()) {
+                   return i + 2;
                }else if(i+1<points.size()){
                    return i+1;
 
@@ -254,7 +366,7 @@ return -1;
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-
+if(!finished){
        if (event.sensor == mAccelerometer) {
             System.arraycopy(event.values, 0, mLastAccelerometer, 0, event.values.length);
             mLastAccelerometerSet = true;
@@ -272,6 +384,7 @@ return -1;
 
         //float azimuthInDegress = Math.round(event.values[0]);
 
+    azimuthInDegress = getRightAzimuth(azimuthInDegress);
 
             RotateAnimation ra = new RotateAnimation(
                     mCurrentDegree+difference,
@@ -282,14 +395,54 @@ return -1;
 
             ra.setDuration(250);
 
-            System.out.println("ZMENA ROTACE");
+            //System.out.println("ZMENA ROTACE");
             ra.setFillAfter(true);
 
             arrow.startAnimation(ra);
             mCurrentDegree = -azimuthInDegress;
     }
     }
+    }
 
+    public float getRightAzimuth(float azimuth){
+        if(azimuth>=330 && azimuth<360){
+            return 0;
+        }
+        if(azimuth>=0 && azimuth<30){
+            return 0;
+        }
+        if(azimuth>=30&&azimuth<90){
+            return 60;
+        }
+        if(azimuth>=270 && azimuth<330){
+            return 300;
+        }
+        if(azimuth>=90 && azimuth<150){
+            return 120;
+        }
+        if(azimuth>=150&&azimuth<210){
+            return 180;
+        }
+        if(azimuth>=210&&azimuth<270){
+            return 240;
+        }
+
+        if(azimuth>=270 && azimuth<330){
+            return 300;
+        }
+
+        /*if(azimuth>=220 && azimuth<260){
+            return 240;
+        }
+
+        if(azimuth>=260 && azimuth<300){
+            return 280;
+        }*/
+
+
+    return 0;
+
+    }
 
 
     @Override
@@ -317,9 +470,9 @@ return -1;
      */
     private void setUpMap() {
 
-        System.out.println("Pozice:" +myPosition.getLatitude());
-        System.out.println("Pozice2:" +myPosition.getLongitude());
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(myPosition.getLatitude(), myPosition.getLongitude()), 19));
+   //     System.out.println("Pozice:" +myPosition.getLatitude());
+    //    System.out.println("Pozice2:" +myPosition.getLongitude());
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(myPosition.getLatitude(), myPosition.getLongitude()), zoom));
 
 
 

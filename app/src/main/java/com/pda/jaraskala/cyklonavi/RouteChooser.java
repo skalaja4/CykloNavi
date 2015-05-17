@@ -1,7 +1,6 @@
 package com.pda.jaraskala.cyklonavi;
 
 import android.app.ActionBar;
-import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -27,37 +26,21 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-
-
-import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 
@@ -85,9 +68,9 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
 
 
         Bundle extras = getIntent().getExtras();
-        System.out.println("JOOO");
+      //  System.out.println("JOOO");
         if(extras !=null){
-            System.out.println("ANOOO");
+       //     System.out.println("ANOOO");
            // direction = (LatLng) extras.get("coordinates1");
            // myPosition = (LatLng) extras.get("coordinates2");
 
@@ -102,8 +85,8 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
             direction=container.getDirection();
             myPosition=container.getMyPosition();
 
-            System.out.println(direction.latitude);
-            System.out.println(myPosition.latitude);
+          //  System.out.println(direction.latitude);
+           // System.out.println(myPosition.latitude);
 
 
         }
@@ -146,7 +129,7 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
         }
 
 
-        listView.setAdapter(new MyAdapter(arrayList,this,container.getRoutes()));
+        listView.setAdapter(new MyAdapter(arrayList,this,container.getRoutes(),container));
 
 
         setUpMapIfNeeded();
@@ -219,7 +202,7 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
 
 
                             fin.close();
-                            System.out.println(buffer);
+                          //  System.out.println(buffer);
                         } catch (FileNotFoundException e) {
                             e.printStackTrace();
                         } catch (IOException e) {
@@ -269,7 +252,7 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
         }
 
         if (id == R.id.action_settings_settings) {
-            startActivity(myIntent(Settings.class));
+            startActivity(myIntent(Setting.class));
 
 
             return true;
@@ -362,10 +345,10 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
         LatLng southWest = new LatLng(Math.min(myLat,desLat),Math.min(myLon,desLon));
         LatLng northEast = new LatLng(Math.max(myLat,desLat),Math.max(myLon,desLon));
 
-        System.out.println(southWest.latitude);
-        System.out.println(southWest.longitude);
-        System.out.println(northEast.latitude);
-        System.out.println(northEast.longitude);
+     //   System.out.println(southWest.latitude);
+       // System.out.println(southWest.longitude);
+        //System.out.println(northEast.latitude);
+        //System.out.println(northEast.longitude);
 
         return new LatLngBounds(southWest,northEast);
 
@@ -422,11 +405,13 @@ class MyAdapter extends BaseAdapter{
     ArrayList<SingleRow> list;
     Context context;
     Route[] routes;
+    Container container;
 
-    MyAdapter(ArrayList<SingleRow> list, Context c, Route[] routes) {
+    MyAdapter(ArrayList<SingleRow> list, Context c, Route[] routes, Container container) {
         this.list = list;
         this.context = c;
         this.routes=routes;
+        this.container=container;
     }
 
     @Override
@@ -459,12 +444,22 @@ class MyAdapter extends BaseAdapter{
             ArrayList<LatLng> points = routes[position].points;
 
                 Intent intent;
-                intent = new Intent(context,NavigationArrow.class);
+                intent = new Intent(context.getApplicationContext(), NavigationArrow.class);
                 intent.putExtra("points",points);
+                intent.putExtra("boolean",false);
+                intent.putExtra("coordinates2",container.getMyPosition());
+                intent.putExtra("coordinates1",container.getDirection());
+                intent.putExtra("intent",new Intent(context, RouteChooser.class));
+                for (int i = 0; i<4;i++){
+                    intent.putExtra("route" +i+"1", container.getRoutes()[i].getPoints());
+                    intent.putExtra("route" +i+"2", container.getRoutes()[i].getLength());
+                    intent.putExtra("route" +i+"3", container.getRoutes()[i].getDuration());
+                    intent.putExtra("route" +i+"4", container.getRoutes()[i].getAscent());
+
+                }
+
+
                 context.startActivity(intent);
-
-
-
             }
         });
 

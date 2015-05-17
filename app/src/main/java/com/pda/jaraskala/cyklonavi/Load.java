@@ -1,6 +1,7 @@
 package com.pda.jaraskala.cyklonavi;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
@@ -36,10 +38,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class Load extends ActionBarActivity implements AdapterView.OnItemClickListener {
+public class Load extends ActionBarActivity implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener{
 LatLng destination;
     Container container;
     LatLng myPosition;
+Adapter myAdapter;
 
     ArrayList<Row> list;
     @Override
@@ -49,6 +52,7 @@ LatLng destination;
 
         ListView lv = (ListView) findViewById(R.id.listView);
         lv.setOnItemClickListener(this);
+        lv.setOnItemLongClickListener(this);
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -125,7 +129,8 @@ LatLng destination;
 
 
 
-        lv.setAdapter(new Adapter(list,this));
+        myAdapter=new Adapter(list,this);
+        lv.setAdapter(myAdapter);
 
         Bundle extras = getIntent().getExtras();
 
@@ -211,6 +216,8 @@ LatLng destination;
 
 
     }
+
+
     public String[] readRouts() throws IOException {
         StringBuilder builder = new StringBuilder();
         HttpClient client = new DefaultHttpClient();
@@ -363,6 +370,25 @@ LatLng destination;
         }
         return intent;
     }
+
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+
+for(Button butt:myAdapter.buttons){
+    butt.setVisibility(View.INVISIBLE);
+}
+
+
+        Button but= (Button)view.findViewById(R.id.loadButton);
+
+        but.setVisibility(View.VISIBLE);
+
+        return false;
+    }
+
+
+
+
 }
 class Row{
     String title;
@@ -397,6 +423,7 @@ class Row{
 
         ArrayList<Row> list;
         Context context;
+    ArrayList<Button> buttons = new ArrayList<Button>();
 
         Adapter(ArrayList<Row> list, Context c) {
             this.list = list;
@@ -423,9 +450,22 @@ class Row{
             LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             View row = inflater.inflate(R.layout.load_row,parent,false);
             TextView title = (TextView) row.findViewById(R.id.textView8);
+            Button but = (Button) row.findViewById(R.id.loadButton);
+
+            but.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+
+                }
+            });
+          //  buttons.add(but);
 
             Row temp =list.get(position);
             title.setText(" " + temp.title);
+
+
+
 
 
             return row;

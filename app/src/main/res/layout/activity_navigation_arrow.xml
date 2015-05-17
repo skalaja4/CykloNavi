@@ -15,9 +15,33 @@
         android:layout_width="match_parent"
         android:layout_height="350dp"
         android:id="@+id/imageView"
-        android:src="@drawable/arrow"
+        android:src="@drawable/arrow2"
         android:scaleType="centerCrop" />
 
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="44dp">
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:text="+"
+            android:id="@+id/plusButton" />
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="-"
+            android:id="@+id/minusButton"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_toRightOf="@+id/plusButton"
+            android:layout_toEndOf="@+id/plusButton" />
+    </RelativeLayout>
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"

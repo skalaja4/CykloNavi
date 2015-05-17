@@ -22,7 +22,7 @@ import com.google.android.gms.maps.model.LatLng;
 import java.util.ArrayList;
 
 
-public class Settings extends ActionBarActivity implements  AdapterView.OnItemSelectedListener {
+public class Setting extends ActionBarActivity implements  AdapterView.OnItemSelectedListener {
 
     Spinner mySpinner1;
     Spinner mySpinner2;
@@ -42,16 +42,16 @@ public class Settings extends ActionBarActivity implements  AdapterView.OnItemSe
         setContentView(R.layout.activity_settings);
 
         mySpinner1 = (Spinner)findViewById(R.id.spinner);
-        mySpinner1.setAdapter(new MyAdapter1(Settings.this, R.layout.row2, strings1));
+        mySpinner1.setAdapter(new MyAdapter1(Setting.this, R.layout.row2, strings1));
         mySpinner1.setOnItemSelectedListener(this);
 
 
         mySpinner2 = (Spinner)findViewById(R.id.spinner2);
-        mySpinner2.setAdapter(new MyAdapter2(Settings.this, R.layout.row2, strings2));
+        mySpinner2.setAdapter(new MyAdapter2(Setting.this, R.layout.row2, strings2));
         mySpinner2.setOnItemSelectedListener(this);
 
         mySpinner3 = (Spinner)findViewById(R.id.spinner3);
-        mySpinner3.setAdapter(new MyAdapter3(Settings.this, R.layout.row3, strings3));
+        mySpinner3.setAdapter(new MyAdapter3(Setting.this, R.layout.row3, strings3));
         mySpinner3.setOnItemSelectedListener(this);
 
 

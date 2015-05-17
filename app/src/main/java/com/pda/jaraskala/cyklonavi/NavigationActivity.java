@@ -1,8 +1,7 @@
 package com.pda.jaraskala.cyklonavi;
 
 import android.app.ActionBar;
-import android.app.PendingIntent;
-import android.app.TaskStackBuilder;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,13 +11,13 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.net.Uri;
+import android.media.audiofx.BassBoost;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.StrictMode;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.ContextCompat;
+import android.provider.Settings;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Gravity;
@@ -26,7 +25,6 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
@@ -40,7 +38,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -55,7 +52,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -63,8 +59,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
 
 public class NavigationActivity extends ActionBarActivity implements OnMapReadyCallback, GoogleMap.OnMapLongClickListener, GoogleMap.OnMapClickListener{
 
@@ -84,12 +78,14 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        createNetErrorDialog();
         setContentView(R.layout.activity_navigation);
 //vymaz();
         LayoutInflater inflater = (LayoutInflater)getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
         View popupView = inflater.inflate(R.layout.popup_layout,null);
         popupView.startAnimation(AnimationUtils.loadAnimation(this,R.anim.abc_slide_in_bottom));
         popupWindow = new PopupWindow(popupView, ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT);
+
 
 
 
@@ -172,6 +168,7 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
                 return false;
             }
         });
+        mapSearchBox.setVisibility(View.INVISIBLE);
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                 new LatLng(myPosition.latitude, myPosition.longitude), 15));
@@ -259,7 +256,7 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
 
         if (id == R.id.action_settings_settings) {
 
-            startActivity(myIntent2(Settings.class));
+            startActivity(myIntent2(Setting.class));
          // navigationEnabled=!navigationEnabled;
 
             //test query na google maps
@@ -430,7 +427,7 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
 
 
     public void parseRout(){
-        System.out.println("PARSE");
+
         ArrayList<String> latitudes= new ArrayList<String>();
         ArrayList<String> lontitudes= new ArrayList<String>();
         if(route.equalsIgnoreCase("")){
@@ -476,7 +473,7 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
             for(int i=0;i<latitudes.size();i++){
 
                 line.geodesic(true).add(new LatLng(Double.parseDouble(latitudes.get(i)), Double.parseDouble(lontitudes.get(i))));
-                System.out.println(Double.parseDouble(latitudes.get(i))+" " +Double.parseDouble(lontitudes.get(i)));
+               // System.out.println(Double.parseDouble(latitudes.get(i))+" " +Double.parseDouble(lontitudes.get(i)));
             }
             line.color(Color.argb(255,102,0,204));
             //line.color(Color.argb(255,0,255,0));
@@ -526,6 +523,12 @@ public class NavigationActivity extends ActionBarActivity implements OnMapReadyC
         return output;
 
 
+    }
+    public boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
     public String[] parseInput(String[] input){
         String[] output= new String[4];
@@ -673,6 +676,31 @@ output.add(new LatLng(Double.parseDouble(latitudes.get(i)), Double.parseDouble(l
         }
 
 
+    }
+
+    protected void createNetErrorDialog() {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("You need a network connection to use this application. Please turn on mobile network or Wi-Fi in Settings.")
+                .setTitle("Unable to connect")
+                .setCancelable(false)
+                .setPositiveButton("Settings",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                Intent i = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
+                                startActivity(i);
+                            }
+                        }
+                )
+                .setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                NavigationActivity.this.finish();
+                            }
+                        }
+                );
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 }
 
