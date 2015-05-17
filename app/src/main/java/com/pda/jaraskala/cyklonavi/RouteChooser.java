@@ -80,6 +80,7 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
                 routes[i].length=(float)extras.get("route" +i+"2");
                 routes[i].duration=(float)extras.get("route" +i+"3");
                 routes[i].ascent=(float)extras.get("route" +i+"4");
+                routes[i].string=(String)extras.get("route" +i+"5");
             }
             container = new Container((LatLng)extras.get("coordinates2"),(LatLng)extras.get("coordinates1"),routes[0],routes[1],routes[2],routes[3]) ;
             direction=container.getDirection();
@@ -133,7 +134,7 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
 
 
         setUpMapIfNeeded();
-        mMap.setMyLocationEnabled(true);
+        //mMap.setMyLocationEnabled(true);
         mMap.getUiSettings().setRotateGesturesEnabled(false);
         mMap.getUiSettings().setAllGesturesEnabled(false);
 
@@ -366,6 +367,7 @@ public class RouteChooser extends ActionBarActivity implements AdapterView.OnIte
             intent.putExtra("route" +i+"2", container.getRoutes()[i].getLength());
             intent.putExtra("route" +i+"3", container.getRoutes()[i].getDuration());
             intent.putExtra("route" +i+"4", container.getRoutes()[i].getAscent());
+            intent.putExtra("route" +i+"5", container.getRoutes()[i].getString());
 
         }
         return intent;
@@ -449,12 +451,14 @@ class MyAdapter extends BaseAdapter{
                 intent.putExtra("boolean",false);
                 intent.putExtra("coordinates2",container.getMyPosition());
                 intent.putExtra("coordinates1",container.getDirection());
+                intent.putExtra("position",position);
                 intent.putExtra("intent",new Intent(context, RouteChooser.class));
                 for (int i = 0; i<4;i++){
                     intent.putExtra("route" +i+"1", container.getRoutes()[i].getPoints());
                     intent.putExtra("route" +i+"2", container.getRoutes()[i].getLength());
                     intent.putExtra("route" +i+"3", container.getRoutes()[i].getDuration());
                     intent.putExtra("route" +i+"4", container.getRoutes()[i].getAscent());
+                    intent.putExtra("route" +i+"5", container.getRoutes()[i].getString());
 
                 }
 

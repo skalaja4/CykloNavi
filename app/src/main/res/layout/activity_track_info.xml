@@ -1,0 +1,52 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="com.pda.jaraskala.cyklonavi.TrackInfo">
+
+    <LinearLayout
+        android:id="@+id/tab_trackInfo"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical">
+
+        <TextView android:text="TRACK INFO"
+            android:textSize="25dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/trackInfo"
+            style="@style/Base.TextAppearance.AppCompat.Large" />
+
+        <TextView
+            android:textSize="23dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/trackInfo_length"
+            android:layout_below="@+id/trackInfo"
+            android:text="Length:           3.6 km"
+            style="@style/Base.TextAppearance.AppCompat.Large" />
+        <TextView
+            android:textSize="23dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/trackInfo_duration"
+            android:layout_below="@+id/trackInfo_length"
+            android:text="Time:              20 min"
+            style="@style/Base.TextAppearance.AppCompat.Large" />
+        <TextView
+            android:textSize="23dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/trackInfo_ascent"
+            android:layout_below="@+id/trackInfo_ascent"
+            android:text="Total ascent: 28 m"
+            style="@style/Base.TextAppearance.AppCompat.Large" />
+
+
+
+
+    </LinearLayout>
+
+</RelativeLayout>

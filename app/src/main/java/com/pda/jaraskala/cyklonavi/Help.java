@@ -34,6 +34,7 @@ public class Help extends ActionBarActivity {
             routes[i].length=(float)extras.get("route" +i+"2");
             routes[i].duration=(float)extras.get("route" +i+"3");
             routes[i].ascent=(float)extras.get("route" +i+"4");
+            routes[i].string=(String)extras.get("route" +i+"5");
         }
         container = new Container((LatLng)extras.get("coordinates2"),(LatLng)extras.get("coordinates1"),routes[0],routes[1],routes[2],routes[3]) ;
         direction=container.getDirection();
@@ -75,6 +76,7 @@ public class Help extends ActionBarActivity {
                     intent.putExtra("route" +i+"2", container.getRoutes()[i].getLength());
                     intent.putExtra("route" +i+"3", container.getRoutes()[i].getDuration());
                     intent.putExtra("route" +i+"4", container.getRoutes()[i].getAscent());
+                    intent.putExtra("route" +i+"5", container.getRoutes()[i].getString());
 
                 }
 

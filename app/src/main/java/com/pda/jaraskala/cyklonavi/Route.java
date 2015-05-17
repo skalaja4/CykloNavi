@@ -15,12 +15,14 @@ public class Route{
     float length=0;
     float duration=0;
     float ascent=0;
+    String string;
 
-    public Route(float length, float duration, float ascent) {
+    public Route(float length, float duration, float ascent, String string) {
         this.length = length;
         this.duration = duration;
         this.ascent = ascent;
         points = new ArrayList<LatLng>();
+        this.string=string;
     }
     public Route(){
         points = new ArrayList<LatLng>();
@@ -58,4 +60,11 @@ public class Route{
         this.ascent = ascent;
     }
 
+    public String getString() {
+        return string;
+    }
+
+    public void setString(String string) {
+        this.string = string;
+    }
 }

@@ -50,7 +50,7 @@ ArrayList<LatLng> points;
     private Sensor mAccelerometer;
     private Sensor mMagnetometer;
     private SensorEventListener c;
-
+    private int position;
     private float[] mLastAccelerometer = new float[3];
     private float[] mLastMagnetometer = new float[3];
     private boolean mLastAccelerometerSet = false;
@@ -95,16 +95,19 @@ ArrayList<LatLng> points;
 
         if(extras !=null) {
             if(!(boolean)extras.get("boolean")){
+                position=(int) extras.get("position");
                 for (int i = 0; i < 4; i++) {
                     routes[i] = new Route();
                     routes[i].points = (ArrayList<LatLng>) extras.get("route" + i + "1");
                     routes[i].length = (float) extras.get("route" + i + "2");
                     routes[i].duration = (float) extras.get("route" + i + "3");
                     routes[i].ascent = (float) extras.get("route" + i + "4");
+                    routes[i].string=(String)extras.get("route" +i+"5");
                 }
                 container = new Container((LatLng) extras.get("coordinates2"), (LatLng) extras.get("coordinates1"), routes[0], routes[1], routes[2], routes[3]);
                 direction = container.getDirection();
                 myPosition2 = container.getMyPosition();
+
             }
         }
 
@@ -301,6 +304,42 @@ ArrayList<LatLng> points;
                 NavUtils.navigateUpFromSameTask(this);
                 return true;
             }
+
+        if(id == R.id.action_trackInfo){
+
+            Intent intent;
+            intent = new Intent(getApplicationContext(), TrackInfo.class);
+            intent.putExtra("points",points);
+            intent.putExtra("boolean",false);
+            intent.putExtra("coordinates2",container.getMyPosition());
+            intent.putExtra("coordinates1",container.getDirection());
+            intent.putExtra("position",position);
+            intent.putExtra("intent",new Intent(this, NavigationArrow.class));
+            for (int i = 0; i<4;i++){
+                intent.putExtra("route" +i+"1", container.getRoutes()[i].getPoints());
+                intent.putExtra("route" +i+"2", container.getRoutes()[i].getLength());
+                intent.putExtra("route" +i+"3", container.getRoutes()[i].getDuration());
+                intent.putExtra("route" +i+"4", container.getRoutes()[i].getAscent());
+                intent.putExtra("route" +i+"5", container.getRoutes()[i].getString());
+
+            }
+
+
+            startActivity(intent);
+    return true;
+        }
+
+        if (id == R.id.action_settings_settings) {
+            startActivity(myIntent(Setting.class));
+
+
+            return true;
+        }
+        if(id==R.id.action_settings_help){
+
+            startActivity(myIntent(Help.class));
+            return true;
+        }
             // NavUtils.navigateUpFromSameTask(this);
 
 
@@ -492,4 +531,22 @@ if(!finished){
         mMap.addPolyline(line);
     }
 
+    public Intent myIntent(Class c){
+        Intent intent;
+        intent = new Intent(getApplicationContext(), c);
+
+        intent.putExtra("boolean",false);
+        intent.putExtra("coordinates2",container.getMyPosition());
+        intent.putExtra("coordinates1",container.getDirection());
+        intent.putExtra("intent",new Intent(this, RouteChooser.class));
+        for (int i = 0; i<4;i++){
+            intent.putExtra("route" +i+"1", container.getRoutes()[i].getPoints());
+            intent.putExtra("route" +i+"2", container.getRoutes()[i].getLength());
+            intent.putExtra("route" +i+"3", container.getRoutes()[i].getDuration());
+            intent.putExtra("route" +i+"4", container.getRoutes()[i].getAscent());
+            intent.putExtra("route" +i+"5", container.getRoutes()[i].getString());
+
+        }
+        return intent;
+    }
 }

@@ -196,7 +196,7 @@ Adapter myAdapter;
                     k++;
                 }
             }
-            route1234[i]=new Route(routeDescription[0]/1000,routeDescription[1]/100,routeDescription[2]);
+            route1234[i]=new Route(routeDescription[0]/1000,routeDescription[1]/100,routeDescription[2],routes[i]);
 
         }
 
@@ -366,6 +366,7 @@ Adapter myAdapter;
             intent.putExtra("route" +i+"2", container.getRoutes()[i].getLength());
             intent.putExtra("route" +i+"3", container.getRoutes()[i].getDuration());
             intent.putExtra("route" +i+"4", container.getRoutes()[i].getAscent());
+            intent.putExtra("route" +i+"5", container.getRoutes()[i].getString());
 
         }
         return intent;
