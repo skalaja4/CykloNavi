@@ -14,6 +14,7 @@ import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 
@@ -91,7 +92,7 @@ public class TrackInfo extends ActionBarActivity {
 
         for(Integer i:first){
 
-                neco[k] = new DataPoint(((double)second.get(k))/1000, first.get(k));
+                neco[k] = new DataPoint(Math.floor((((double)second.get(k))/1000)*100)/100, first.get(k));
             k++;
 
         }
@@ -101,7 +102,7 @@ public class TrackInfo extends ActionBarActivity {
         LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(neco);
 
         graph.getViewport().setXAxisBoundsManual(true);
-        graph.getViewport().setMaxX(((double)second.get(second.size()-1))/1000);
+        graph.getViewport().setMaxX(Math.floor((((double)second.get(second.size()-1))/1000)*100)/100);
         graph.getViewport().setMinX(0);
 
         graph.addSeries(series);
